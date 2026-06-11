@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilha 1 — Engenharia de Prompt | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+    }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento (trilha emerald) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+
+    /* Light mode - hovers das demais trilhas (nav) */
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    /* Light mode - boxes auxiliares */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    /* Light mode - remove gradientes (fundo uniforme) */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    /* Light mode - cores especiais */
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Light mode - SVG futurista contido */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full mb-4">
+        TRILHA 1 · BASE DA PIRÂMIDE
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">✍️ Engenharia de Prompt</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl mb-2">
+        <strong class="text-emerald-400">"Prompt é a pergunta."</strong> A porta de entrada da pirâmide: aprenda a pedir de forma que a IA acerte — e descubra que a qualidade da resposta depende da qualidade do pedido.
+      </p>
+      <p class="text-neutral-400 max-w-3xl">
+        <strong class="text-neutral-300">O caso desta trilha — o e-mail difícil:</strong> você precisa responder um cliente insatisfeito. O mesmo pedido, em 4 versões, gera 4 respostas completamente diferentes. Nesta trilha você vê essa diferença acontecer — e aprende a construí-la.
+      </p>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">3</div>
+          <div class="text-xs text-neutral-400">Módulos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">21</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">~2h</div>
+          <div class="text-xs text-neutral-400">Duração</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">Básico</div>
+          <div class="text-xs text-neutral-400">Nivel</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- HERO SVG -->
+    <div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+      <svg viewBox="0 0 1000 240" class="w-full h-auto" role="img" aria-label="As cinco partes de um prompt — papel, tarefa, contexto, formato e exemplo — convergem num prompt forte que gera uma resposta certeira">
+        <defs>
+          <linearGradient id="t1h-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#10b981"/>
+          </linearGradient>
+          <filter id="t1h-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <pattern id="t1h-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <circle cx="1.3" cy="1.3" r="1.3" fill="#10b981" opacity="0.12"/>
+          </pattern>
+          <marker id="t1h-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#34d399"/></marker>
+          <marker id="t1h-ahc" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"/></marker>
+        </defs>
+        <rect x="0" y="0" width="1000" height="240" fill="url(#t1h-grid)"/>
+        <g fill="none" stroke="#38bdf8" stroke-width="1.8" opacity="0.5">
+          <path d="M196,38  C300,38 320,120 422,120" marker-end="url(#t1h-ahc)"/>
+          <path d="M196,79  C300,79 320,120 422,120" marker-end="url(#t1h-ahc)"/>
+          <path d="M196,120 L422,120" marker-end="url(#t1h-ahc)"/>
+          <path d="M196,161 C300,161 320,120 422,120" marker-end="url(#t1h-ahc)"/>
+          <path d="M196,202 C300,202 320,120 422,120" marker-end="url(#t1h-ahc)"/>
+        </g>
+        <path d="M608,120 L790,120" fill="none" stroke="#34d399" stroke-width="2" opacity="0.65" marker-end="url(#t1h-ah)"/>
+        <g font-family="Inter,sans-serif" font-size="13" font-weight="600">
+          <g class="wf-a"><rect x="60" y="22"  width="136" height="32" rx="9" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/><text x="128" y="43"  text-anchor="middle" fill="#bfe6ff">Papel</text></g>
+          <g class="wf-a"><rect x="60" y="63"  width="136" height="32" rx="9" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/><text x="128" y="84"  text-anchor="middle" fill="#bfe6ff">Tarefa</text></g>
+          <g class="wf-a"><rect x="60" y="104" width="136" height="32" rx="9" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/><text x="128" y="125" text-anchor="middle" fill="#bfe6ff">Contexto</text></g>
+          <g class="wf-a"><rect x="60" y="145" width="136" height="32" rx="9" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/><text x="128" y="166" text-anchor="middle" fill="#bfe6ff">Formato</text></g>
+          <g class="wf-a"><rect x="60" y="186" width="136" height="32" rx="9" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/><text x="128" y="207" text-anchor="middle" fill="#bfe6ff">Exemplo</text></g>
+        </g>
+        <g filter="url(#t1h-glow)"><rect x="422" y="88" width="186" height="64" rx="14" fill="#0e2018" stroke="url(#t1h-grad)" stroke-width="2.5"/></g>
+        <text x="515" y="114" text-anchor="middle" fill="#34d399" font-family="Inter,sans-serif" font-weight="600" font-size="18">Prompt forte</text>
+        <text x="515" y="135" text-anchor="middle" fill="#a7e8cd" font-family="Inter,sans-serif" font-size="12">pedido estruturado</text>
+        <rect x="790" y="88" width="170" height="64" rx="14" fill="#0e2018" stroke="#34d399" stroke-width="2"/>
+        <text x="875" y="114" text-anchor="middle" fill="#34d399" font-family="Inter,sans-serif" font-weight="600" font-size="15">Resposta certeira</text>
+        <text x="875" y="135" text-anchor="middle" fill="#a7e8cd" font-family="Inter,sans-serif" font-size="12">menos retrabalho</text>
+      </svg>
+    </div>
+
+    <!-- MAPA DA TRILHA -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-6">Mapa da trilha</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="#modulo-1-0" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-emerald-400 font-bold text-sm">1.0</span>
+            <span class="text-xs text-neutral-500">~40 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🌱 Base Zero</h3>
+          <p class="text-xs text-neutral-400">Nunca usei IA? Comece aqui</p>
+        </a>
+        <a href="#modulo-1-1" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-emerald-400 font-bold text-sm">1.1</span>
+            <span class="text-xs text-neutral-500">~45 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">🧬 Anatomia do Prompt</h3>
+          <p class="text-xs text-neutral-400">4 versões, 4 resultados</p>
+        </a>
+        <a href="#modulo-1-2" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-emerald-400 font-bold text-sm">1.2</span>
+            <span class="text-xs text-neutral-500">~35 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-emerald-400 transition-colors">📚 Prompts Reutilizáveis</h3>
+          <p class="text-xs text-neutral-400">Pare de reescrever do zero</p>
+        </a>
+      </div>
+    </section>
+
+    <h2 class="text-2xl font-bold mb-6">Conteudo detalhado</h2>
+
+    <!-- MODULO 1.0 -->
+    <div id="modulo-1-0" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-emerald-400 font-bold">1.0</span>
+          <span class="text-xs text-neutral-500">~40 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">🌱 Base Zero — pra quem entra agora</h3>
+        <p class="text-neutral-400 text-sm">Nunca usou IA (ou usou e desistiu)? Este módulo derruba os mitos, ensina o vocabulário mínimo e te leva à primeira conversa que funciona — incluindo como usar sem se queimar.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">🤖</span>
+            <div>
+              <span class="font-medium">O que é IA generativa</span>
+              <span class="text-neutral-500 text-sm ml-2">- Em 1 frase honesta, sem hype</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um programa que aprendeu padrões de bilhões de textos e usa esses padrões para gerar respostas novas ao seu pedido. Não é mágica nem consciência — é previsão de linguagem muito sofisticada.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Entender o que a IA realmente é elimina o medo e a expectativa errada. Quem espera mágica se frustra; quem entende o mecanismo aprende a extrair o melhor dele.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">IA generativa, padrões de linguagem, previsão de texto, expectativa realista.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">🔤</span>
+            <div>
+              <span class="font-medium">Vocabulário mínimo</span>
+              <span class="text-neutral-500 text-sm ml-2">- Modelo, prompt, resposta, janela de contexto</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">As 4 palavras que você precisa pra não se perder: modelo (o "cérebro"), prompt (seu pedido), resposta (o que volta) e janela de contexto (a memória da conversa).</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Todo tutorial, curso e conversa sobre IA usa esses termos. Com 4 conceitos você lê qualquer material sem se sentir de fora.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Modelo, prompt, resposta, janela de contexto, memória da conversa.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">🖱️</span>
+            <div>
+              <span class="font-medium">Como abrir e conversar</span>
+              <span class="text-neutral-500 text-sm ml-2">- ChatGPT, Claude e Gemini: onde clicar</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O passo a passo literal: criar conta gratuita, encontrar o campo de texto, enviar a primeira mensagem e continuar a conversa nas 3 ferramentas mais usadas.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">A barreira inicial é prática, não intelectual. Dez minutos de "onde clicar" eliminam semanas de adiamento.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">ChatGPT, Claude, Gemini, conta gratuita, conversa contínua.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🧱</span>
+            <div>
+              <span class="font-medium">Os 3 mitos do retardatário</span>
+              <span class="text-neutral-500 text-sm ml-2">- "É tarde", "é só pra programador", "vai me substituir"</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A desmontagem dos 3 medos que mais paralisam quem está começando agora — com a realidade no lugar de cada um.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">A barreira de quem entra tarde é emocional antes de ser técnica. Derrubar os mitos libera energia pra aprender de verdade.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Mito do atraso, mito do programador, mito da substituição, vantagem da base.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">💬</span>
+            <div>
+              <span class="font-medium">Primeira conversa guiada</span>
+              <span class="text-neutral-500 text-sm ml-2">- Copie, cole e veja acontecer</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um roteiro de 3 mensagens prontas pra copiar e colar: um pedido simples, um refinamento e um pedido de formato. Você vê a conversa evoluir na prática.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">A primeira vitória muda tudo. Quem vê a IA resolver algo SEU em 5 minutos nunca mais adia.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Primeiro prompt, refinamento, conversa em turnos, vitória rápida.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">🛡️</span>
+            <div>
+              <span class="font-medium">Verificação: use sem se queimar</span>
+              <span class="text-neutral-500 text-sm ml-2">- Alucinação e os 3 cheques antes de usar</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A IA às vezes inventa fatos com total confiança — isso se chama alucinação. Aqui você aprende os 3 cheques (fonte? data? faz sentido?) antes de usar qualquer resposta.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Um único dado inventado num e-mail, contrato ou aula destrói sua credibilidade. Verificar é o hábito que separa o profissional do amador.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Alucinação, os 3 cheques, confiança calibrada, responsabilidade pelo resultado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">🚧</span>
+            <div>
+              <span class="font-medium">O que a IA NÃO faz bem</span>
+              <span class="text-neutral-500 text-sm ml-2">- E por que saber isso te protege</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O mapa dos pontos fracos: fatos muito recentes, contas complexas, decisões que exigem responsabilidade legal e tudo que depende de informação que ela não tem.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Quem conhece os limites usa a ferramenta no que ela brilha e evita o vexame de confiar no que ela tropeça.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Limites do modelo, corte de conhecimento, responsabilidade humana, uso no ponto forte.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-1-0')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-1-0.html" class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- MODULO 1.1 -->
+    <div id="modulo-1-1" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-emerald-400 font-bold">1.1</span>
+          <span class="text-xs text-neutral-500">~45 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">🧬 Anatomia de um bom prompt</h3>
+        <p class="text-neutral-400 text-sm">O caso do e-mail difícil em 4 versões: do "responde esse cliente" ao prompt completo. Você aprende as 5 partes que transformam um pedido fraco numa resposta certeira.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">🧬</span>
+            <div>
+              <span class="font-medium">As 5 partes de um prompt forte</span>
+              <span class="text-neutral-500 text-sm ml-2">- Papel · Tarefa · Contexto · Formato · Exemplo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A estrutura que sustenta qualquer prompt profissional: quem a IA deve ser (papel), o que fazer (tarefa), o que precisa saber (contexto), como entregar (formato) e um modelo do resultado (exemplo).</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">É a diferença entre torcer pra resposta sair boa e construir uma resposta boa. As 5 partes valem pra qualquer ferramenta e qualquer tarefa.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Papel, tarefa, contexto, formato, exemplo, estrutura reutilizável.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">⚔️</span>
+            <div>
+              <span class="font-medium">Pedido fraco × pedido forte</span>
+              <span class="text-neutral-500 text-sm ml-2">- O e-mail difícil em 4 versões</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O mesmo pedido real — responder um cliente insatisfeito — escrito em 4 níveis de qualidade, com as 4 respostas lado a lado. A diferença é visível, não teórica.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Ver a progressão de uma resposta genérica até uma resposta pronta-pra-enviar convence mais que qualquer explicação — e te dá o caminho pra reproduzir.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Progressão de qualidade, pedido genérico, especificidade, caso do e-mail difícil.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">📐</span>
+            <div>
+              <span class="font-medium">Formato de saída</span>
+              <span class="text-neutral-500 text-sm ml-2">- Lista, tabela, passo a passo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Dizer COMO a resposta deve vir: em lista, tabela comparativa, passo a passo numerado, texto corrido curto. Quem não pede formato recebe o formato que a IA escolher.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">O formato certo elimina retrabalho: uma tabela pronta se cola na planilha; um passo a passo vira checklist. Você para de reformatar resposta.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Formato de saída, tabela, lista, passo a passo, resposta aproveitável.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🎚️</span>
+            <div>
+              <span class="font-medium">O nível certo de explicação</span>
+              <span class="text-neutral-500 text-sm ml-2">- Criança, leigo ou especialista</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Pedir a explicação no nível de quem vai ler: "como pra uma criança de 10 anos", "pra um leigo interessado", "pra um especialista da área". O mesmo conteúdo, três profundidades.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">É o truque mais barato pra entender qualquer assunto difícil — e pra produzir material adequado ao SEU público em vez de texto travado.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Nível de profundidade, público-alvo da resposta, explicação em camadas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">🧪</span>
+            <div>
+              <span class="font-medium">Exemplos e comparações de propósito</span>
+              <span class="text-neutral-500 text-sm ml-2">- Mostre o que você quer</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Incluir no prompt um exemplo do resultado desejado ("quero algo neste estilo: ...") e pedir comparações ("compare A com B em tabela"). A IA imita exemplos com precisão impressionante.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Um exemplo vale mais que três parágrafos de instrução. É a forma mais rápida de transferir seu gosto e seu padrão pra máquina.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Exemplo no prompt, imitação de estilo, comparação dirigida, few-shot.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">💀</span>
+            <div>
+              <span class="font-medium">Erros que matam o prompt</span>
+              <span class="text-neutral-500 text-sm ml-2">- Genérico, ambíguo, sem formato</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Os 3 assassinos de resposta: pedido genérico ("fale sobre..."), ambiguidade (duas interpretações possíveis) e ausência de formato. Mais o antídoto de cada um.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">90% das respostas ruins vêm desses 3 erros — não da IA. Reconhecê-los no SEU prompt é consertar a resposta antes de ela nascer.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Pedido genérico, ambiguidade, falta de formato, diagnóstico do próprio prompt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">🔁</span>
+            <div>
+              <span class="font-medium">Iteração sem recomeçar</span>
+              <span class="text-neutral-500 text-sm ml-2">- Melhore a resposta, não o prompt inteiro</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A arte do segundo turno: "encurta", "mais formal", "troca o exemplo 2", "mantém tudo, só melhora o título". A conversa continua de onde parou — sem reescrever nada.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Iterar é mais rápido que perfeccionar o prompt inicial. Quem domina o refinamento chega no resultado em 3 turnos, não em 10 tentativas do zero.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Refinamento incremental, instrução de ajuste, conversa em turnos, economia de esforço.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-1-1')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-1-1.html" class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- MODULO 1.2 -->
+    <div id="modulo-1-2" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-emerald-400 font-bold">1.2</span>
+          <span class="text-xs text-neutral-500">~35 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">📚 Prompts reutilizáveis</h3>
+        <p class="text-neutral-400 text-sm">Do improviso ao modelo: 10 templates prontos com variáveis, onde guardar, como nomear — e os 3 que resolvem 80% do seu dia. Você sai com sua biblioteca pessoal começada.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">⏳</span>
+            <div>
+              <span class="font-medium">Reescrever sempre é desperdício</span>
+              <span class="text-neutral-500 text-sm ml-2">- O custo invisível do improviso</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A conta que ninguém faz: se você escreve o mesmo tipo de pedido 5× por semana, improvisar custa horas por mês — e a qualidade oscila a cada vez.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Perceber o desperdício é o gatilho pra mudar o hábito. É também a primeira semente da camada 4 (Aproveitamento).</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Custo do improviso, repetição, consistência, prompt como ativo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">🧩</span>
+            <div>
+              <span class="font-medium">Anatomia de um template</span>
+              <span class="text-neutral-500 text-sm ml-2">- Variáveis [ENTRE COLCHETES]</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um prompt forte onde as partes que mudam viram variáveis: [PÚBLICO], [TEMA], [TOM]. Na hora de usar, você só preenche os colchetes.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">É o pulo do gato da reutilização: um template bem feito serve pra dezenas de situações trocando 3 palavras.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Template, variável, preenchimento, generalização do prompt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">📚</span>
+            <div>
+              <span class="font-medium">10 templates prontos</span>
+              <span class="text-neutral-500 text-sm ml-2">- Copie hoje, use pra sempre</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Resumo, e-mail, explicação, brainstorm, revisão de texto, comparação, plano de aula, proposta comercial, post e análise de documento — 10 templates completos, testados, prontos pra colar.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">É o kit de partida da sua biblioteca: você não começa do zero, começa do 10.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Kit de templates, casos de uso frequentes, biblioteca inicial.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🗄️</span>
+            <div>
+              <span class="font-medium">Onde guardar</span>
+              <span class="text-neutral-500 text-sm ml-2">- Doc, notas ou app — o lugar certo é o que você abre</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">As opções reais — um doc simples, app de notas, planilha — com prós e contras. Regra de ouro: o melhor lugar é o que você JÁ abre todo dia.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Biblioteca que ninguém abre é biblioteca morta. A escolha do lugar decide se o hábito pega.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Local único, fricção zero, hábito de consulta.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">🏷️</span>
+            <div>
+              <span class="font-medium">Nomear e versionar</span>
+              <span class="text-neutral-500 text-sm ml-2">- "email-cliente-bravo-v2" se acha; "prompt bom" não</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Convenção simples de nome (o-que-faz + situação) e versão (v1, v2, campeão). Quando um template melhora, a versão antiga não se perde — vira histórico.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Com 5 prompts você lembra de cabeça; com 30, só o nome salva. Nomear bem hoje é se achar daqui a 6 meses.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Convenção de nomes, versionamento, template campeão.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">⚡</span>
+            <div>
+              <span class="font-medium">Atalho do retardatário</span>
+              <span class="text-neutral-500 text-sm ml-2">- Os 3 templates que resolvem 80% do dia</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Sem tempo pra 10? Comece com 3: resumir qualquer coisa, escrever qualquer mensagem, explicar qualquer assunto. Cobrem a maior parte do uso real de quem está começando.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">O perfeccionismo atrasa mais que a ignorância. 3 templates usados valem mais que 30 guardados.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Mínimo viável, regra 80/20, começar pequeno.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">💼</span>
+            <div>
+              <span class="font-medium">Na sua profissão</span>
+              <span class="text-neutral-500 text-sm ml-2">- O template-chave de cada perfil</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-emerald-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O template que mais paga em cada profissão: plano de aula (professor), análise de cláusula (advogado), follow-up (vendedor), resumo de reunião (gestor), roteiro (criador).</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Requalificação acontece quando a IA resolve o SEU problema, não um exemplo abstrato. Aqui você se vê no espelho.</p>
+              </div>
+              <div>
+                <span class="text-emerald-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Template por profissão, caso de maior retorno, aplicação imediata.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-1-2')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-1-2.html" class="px-4 py-2 text-sm bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- NAVEGACAO -->
+    <div class="flex flex-col sm:flex-row gap-4 mt-12">
+      <a href="../../index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+        ← Voltar ao Início
+      </a>
+      <a href="../trilha2/index.html" class="flex-1 text-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-colors">
+        Próxima Trilha: Intenção →
+      </a>
+    </div>
+
+  </main>
+
+  <!-- MODAIS -->
+  <div id="modal-1-0" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <span class="text-emerald-400 font-bold">1.0</span>
+          <span class="font-semibold">Base Zero — pra quem entra agora</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-1-0.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+  <div id="modal-1-1" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <span class="text-emerald-400 font-bold">1.1</span>
+          <span class="font-semibold">Anatomia de um bom prompt</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-1-1.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+  <div id="modal-1-2" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <span class="text-emerald-400 font-bold">1.2</span>
+          <span class="font-semibold">Prompts reutilizáveis</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-1-2.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => {
+        if (exp !== explanation) exp.classList.remove('active');
+      });
+      explanation.classList.toggle('active');
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(modal => modal.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

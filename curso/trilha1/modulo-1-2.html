@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 1.2 — Prompts reutilizáveis | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento (trilha emerald) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:bg-emerald-500\/30:hover { background-color: rgba(5, 150, 105, 0.18); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-emerald-400 bg-emerald-500/10">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-emerald-400">Inicio</a>
+      <span>/</span>
+      <a href="index.html" class="hover:text-emerald-400">Trilha 1</a>
+      <span>/</span>
+      <span class="text-emerald-400">Modulo 1.2</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full mb-4">
+        MODULO 1.2
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">📚 Prompts reutilizáveis — do improviso ao modelo</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">
+        Você já sabe escrever um prompt forte. Agora pare de reescrevê-lo toda vez. Neste módulo o prompt vira <strong class="text-neutral-300">ativo</strong>: template com variáveis, nome, versão e lugar fixo. Você sai com sua biblioteca pessoal começada — 10 templates prontos + os seus.
+      </p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">7</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">35</div>
+          <div class="text-xs text-neutral-400">Minutos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">Básico</div>
+          <div class="text-xs text-neutral-400">Nível</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-emerald-400">Prática</div>
+          <div class="text-xs text-neutral-400">Tipo</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- TOPICO 1 -->
+    <section id="topico-1" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold">⏳ Reescrever sempre é desperdício — a conta que ninguém faz</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Pense no último mês: quantas vezes você pediu (ou pediria) à IA um resumo, um e-mail, uma explicação? Se a resposta é "várias", cada vez que você improvisou o pedido do zero, pagou duas vezes: <strong class="text-emerald-400">em tempo e em qualidade oscilante</strong>.
+      </p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center">
+          <span class="mr-2">📊</span> A conta do improviso
+        </h3>
+        <ul class="space-y-2 text-neutral-300">
+          <li><strong>5 pedidos parecidos/semana</strong> × 4 min improvisando cada = <strong>~80 min/mês</strong> reescrevendo o que já foi escrito</li>
+          <li><strong>Qualidade na loteria:</strong> dia bom = prompt bom; dia corrido = prompt fraco = resposta fraca</li>
+          <li><strong>Aprendizado zero:</strong> o ajuste genial que você fez terça se perde quarta — ninguém anotou</li>
+        </ul>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center">
+          <span class="mr-2">🔺</span> A semente da camada 4
+        </h3>
+        <p class="text-neutral-300">Guarde esta ideia: <strong>o que funciona não pode se perder — deve virar modelo</strong>. Neste módulo você aplica isso a prompts. Na Trilha 4 (Aproveitamento), vai aplicar o mesmo princípio a processos inteiros. A pirâmide se constrói assim: cada camada planta a próxima.</p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-emerald-400 font-semibold text-sm mb-1">Custo invisível</h4>
+          <p class="text-xs text-neutral-400">~80 min/mês reescrevendo o mesmo pedido</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-emerald-400 font-semibold text-sm mb-1">Consistência</h4>
+          <p class="text-xs text-neutral-400">Template bom = qualidade estável, sem loteria</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-emerald-400 font-semibold text-sm mb-1">Prompt = ativo</h4>
+          <p class="text-xs text-neutral-400">Um bom prompt vale dinheiro: trate como patrimônio</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-emerald-400 font-semibold text-sm mb-1">Ponte pra T4</h4>
+          <p class="text-xs text-neutral-400">O que funciona vira modelo — princípio da pirâmide</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 2 -->
+    <section id="topico-2" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold">🧩 Anatomia de um template — variáveis [ENTRE COLCHETES]</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Template é um prompt forte onde <strong class="text-emerald-400">as partes que mudam viraram variáveis</strong>. O esqueleto (papel, formato, regras) fica fixo; só o miolo ([TEMA], [PÚBLICO], [TOM]) troca a cada uso. Veja a transformação:
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-2 font-semibold">ANTES — prompt de uso único (o e-mail difícil V4 do módulo 1.1)</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 mb-4">
+Você é o dono de uma loja pequena... cliente reclamou do pedido atrasado e embalagem danificada... ofereça reenvio ou reembolso...
+        </div>
+        <p class="text-xs text-neutral-500 mb-2 font-semibold">DEPOIS — template "resposta-cliente-insatisfeito-v1" (serve pra QUALQUER reclamação)</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+Você é [SEU PAPEL — ex.: dono de loja pequena que valoriza cada cliente].<br>
+Escreva uma resposta pra um cliente que reclamou de: [PROBLEMA].<br>
+Tom: humano e direto, sem juridiquês. Assuma o erro sem se humilhar.<br>
+Ofereça: [SOLUÇÃO A] ou [SOLUÇÃO B], à escolha dele.<br>
+Formato: máximo 120 palavras, 3 parágrafos (reconhecer, resolver, reconquistar).<br>
+Termine com uma frase pessoal, não com "atenciosamente".
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-emerald-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+        <svg viewBox="0 0 1000 260" class="w-full h-auto" role="img" aria-label="Escada de maturidade em quatro degraus: improviso, prompt forte, template com variáveis e biblioteca pessoal — cada degrau acima do anterior">
+          <defs>
+            <linearGradient id="m12-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#10b981"/>
+            </linearGradient>
+            <filter id="m12-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="m12-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1.3" cy="1.3" r="1.3" fill="#10b981" opacity="0.12"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="1000" height="260" fill="url(#m12-grid)"/>
+          <path d="M70,212 L900,52" fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="9 9" opacity="0.45"/>
+          <g font-family="Inter,sans-serif">
+            <rect x="60" y="168" width="190" height="62" rx="12" fill="#26201a" stroke="#9ca3af" stroke-width="2"/>
+            <text x="155" y="194" text-anchor="middle" fill="#e5e7eb" font-weight="600" font-size="14">Improviso</text>
+            <text x="155" y="214" text-anchor="middle" fill="#9ca3af" font-size="11">escreve do zero toda vez</text>
+            <rect x="290" y="128" width="190" height="62" rx="12" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/>
+            <text x="385" y="154" text-anchor="middle" fill="#bfe6ff" font-weight="600" font-size="14">Prompt forte</text>
+            <text x="385" y="174" text-anchor="middle" fill="#9ad6ff" font-size="11">5 partes (módulo 1.1)</text>
+            <rect x="520" y="88" width="190" height="62" rx="12" fill="#0e1b26" stroke="#38bdf8" stroke-width="2"/>
+            <text x="615" y="114" text-anchor="middle" fill="#bfe6ff" font-weight="600" font-size="14">Template</text>
+            <text x="615" y="134" text-anchor="middle" fill="#9ad6ff" font-size="11">variáveis [ ] reutilizáveis</text>
+            <g filter="url(#m12-glow)"><rect x="750" y="44" width="200" height="66" rx="12" fill="#0e2018" stroke="url(#m12-grad)" stroke-width="2.5"/></g>
+            <text x="850" y="72" text-anchor="middle" fill="#34d399" font-weight="600" font-size="15">Biblioteca</text>
+            <text x="850" y="92" text-anchor="middle" fill="#a7e8cd" font-size="11">nomeada, versionada, viva</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">A regra pra decidir o que vira variável: <strong>se mudou nos últimos 3 usos, é variável; se não mudou, é esqueleto.</strong> Não exagere — template com 12 colchetes é formulário, não atalho. O ideal: 2 a 4 variáveis.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 3 -->
+    <section id="topico-3" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold">📚 Os 10 templates prontos — copie hoje, use pra sempre</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Seu kit de partida. Cada um segue as 5 partes do módulo 1.1, com variáveis prontas. <strong class="text-emerald-400">Copie todos pro seu lugar de guardar</strong> (tópico 4) — mesmo os que não parecem úteis hoje.
+      </p>
+
+      <div class="space-y-4 mb-6">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">1 · resumo-executivo</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Resuma o texto abaixo em [5] bullets de no máximo 15 palavras cada, na ordem do mais importante pro menos. Ao final, 1 frase: "decisão que este texto pede". Texto: [COLAR]</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">2 · email-profissional</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Escreva um e-mail pra [DESTINATÁRIO] com o objetivo de [OBJETIVO]. Tom: [cordial e direto]. Máximo 120 palavras. Assunto incluído. Contexto: [SITUAÇÃO em 2 frases].</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">3 · explica-simples</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Explique [CONCEITO] pra [uma criança de 10 anos / um leigo interessado / um especialista]. Use 1 analogia do dia a dia e 1 exemplo prático. Máximo [8] frases.</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">4 · brainstorm-dirigido</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Gere [10] ideias de [O QUE] pra [PÚBLICO/CONTEXTO]. Metade seguras, metade ousadas. Formato: tabela com colunas Ideia, Por que funciona, Esforço (baixo/médio/alto).</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">5 · revisa-texto</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Revise o texto abaixo em 2 passos: 1) liste erros e trechos confusos; 2) versão corrigida mantendo MEU estilo (não reescreva tudo). Público do texto: [QUEM]. Texto: [COLAR]</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">6 · compara-decide</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Compare [A] e [B] numa tabela: custo, esforço, risco, prazo. Depois recomende um pro meu caso: [SEU CASO em 1 frase]. Diga também quando a OUTRA opção seria melhor.</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">7 · plano-de-aula <span class="text-xs text-neutral-500 font-normal">(👩‍🏫 favorito dos professores)</span></h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Monte um plano de aula de [DURAÇÃO] sobre [TEMA] pra [SÉRIE/PERFIL DA TURMA]. Estrutura: gancho inicial (5 min), explicação com 1 analogia, atividade prática em grupos, verificação de aprendizagem. Inclua 2 perguntas pra alunos que terminarem antes.</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">8 · proposta-comercial <span class="text-xs text-neutral-500 font-normal">(💼 favorito de vendedores e autônomos)</span></h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Escreva uma proposta pra [CLIENTE/EMPRESA] oferecendo [SERVIÇO/PRODUTO]. Estrutura: problema dele (2 frases), solução, 3 entregáveis concretos, investimento [VALOR], próximo passo claro. Tom confiante sem arrogância. Máximo 1 página.</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">9 · post-com-gancho <span class="text-xs text-neutral-500 font-normal">(🎨 favorito de criadores)</span></h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Escreva um post pra [REDE] sobre [TEMA] pro público [QUEM]. Estrutura: gancho de 1 linha que gera curiosidade, dor do público, explicação simples, exemplo prático, benefício direto, chamada pra ação. Me dê 3 opções só de gancho ao final.</div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">10 · analisa-documento <span class="text-xs text-neutral-500 font-normal">(⚖️📊 favorito de advogados e gestores)</span></h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-xs text-neutral-300">Analise o documento abaixo como [PAPEL — ex.: advogado revisando pro cliente / gestor avaliando risco]. Liste: 1) pontos de atenção em ordem de gravidade; 2) o que está faltando; 3) perguntas que eu deveria fazer antes de assinar/aprovar. Documento: [COLAR — sem dados sensíveis!]</div>
+        </div>
+      </div>
+
+      <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+        <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center">
+          <span class="mr-2">⚠️</span> Atenção — prévia da Trilha 3
+        </h3>
+        <p class="text-neutral-300">No template 10, o aviso <strong>"sem dados sensíveis!"</strong> não é decorativo: nunca cole contratos com nomes reais, dados de clientes ou informações confidenciais. Troque por [NOME], [EMPRESA], [VALOR]. A Trilha 3 dedica um tópico inteiro a isso — por ora, grave a regra de ouro: <strong>"colaria isso num grupo público?"</strong></p>
+      </div>
+    </section>
+
+    <!-- TOPICO 4 -->
+    <section id="topico-4" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold">🗄️ Onde guardar — o melhor lugar é o que você JÁ abre</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Biblioteca que ninguém abre é biblioteca morta. A escolha do lugar não é técnica — é <strong class="text-emerald-400">comportamental</strong>: o melhor lugar é aquele que já faz parte do seu dia.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">📄 Doc único (Google Docs/Word)</h4>
+          <p class="text-sm text-neutral-300 mb-2">Um documento, um título por template, busca com Ctrl+F.</p>
+          <p class="text-xs text-neutral-400"><strong>Pra quem:</strong> a maioria. Simples, buscável, compartilhável. <strong>Comece aqui.</strong></p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">📝 App de notas (Notion/Obsidian/Keep)</h4>
+          <p class="text-sm text-neutral-300 mb-2">Uma nota por template, tags por categoria.</p>
+          <p class="text-xs text-neutral-400"><strong>Pra quem:</strong> já vive num app de notas. Não adote um app novo SÓ pra isso.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-2">📊 Planilha</h4>
+          <p class="text-sm text-neutral-300 mb-2">Colunas: nome, template, quando usar, versão.</p>
+          <p class="text-xs text-neutral-400"><strong>Pra quem:</strong> gente de planilha e equipes (vira base compartilhada natural).</p>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">Faça AGORA, não depois: crie o doc, cole os 10 templates deste módulo + os 3 que você reescreveu no módulo 1.1. <strong>Pronto: você tem uma biblioteca de 13 prompts</strong> — mais do que 95% dos usuários de IA têm. Tempo: 5 minutos.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 5 -->
+    <section id="topico-5" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold">🏷️ Nomear e versionar — "prompt bom" não se acha; "email-cliente-bravo-v2" sim</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Com 5 prompts, você lembra de cabeça. Com 30, só o nome salva. A convenção é simples: <strong class="text-emerald-400">o-que-faz + situação + versão</strong>.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+          <h4 class="font-bold text-red-400 mb-4">✗ Nomes que se perdem</h4>
+          <ul class="space-y-3 text-neutral-300 font-mono text-sm">
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>"prompt bom"</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>"teste 3 final FINAL"</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>"aquele que funcionou"</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>"novo prompt (2)"</span></li>
+          </ul>
+        </div>
+        <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-6">
+          <h4 class="font-bold text-emerald-400 mb-4">✓ Nomes que se acham</h4>
+          <ul class="space-y-3 text-neutral-300 font-mono text-sm">
+            <li class="flex items-start space-x-2"><span class="text-emerald-400">✓</span><span>email-cliente-bravo-v2</span></li>
+            <li class="flex items-start space-x-2"><span class="text-emerald-400">✓</span><span>resumo-reuniao-v1</span></li>
+            <li class="flex items-start space-x-2"><span class="text-emerald-400">✓</span><span>post-instagram-gancho-v3 ⭐campeão</span></li>
+            <li class="flex items-start space-x-2"><span class="text-emerald-400">✓</span><span>proposta-consultoria-v1</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+        <h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center">
+          <span class="mr-2">🔍</span> As 3 regras de versão
+        </h3>
+        <ul class="space-y-2 text-neutral-300">
+          <li><strong>Melhorou? Nova versão</strong> (v1 → v2) — não sobrescreva: a v1 é seu histórico e seu plano B.</li>
+          <li><strong>Marque o campeão</strong> — um ⭐ no que está em uso. Você sempre sabe qual pegar com pressa.</li>
+          <li><strong>Anote 1 linha do porquê</strong> — "v2: pedi 3 ganchos no final, melhorou muito". Esse hábito de 10 segundos é a Engenharia de Aproveitamento (T4) nascendo.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- TOPICO 6 -->
+    <section id="topico-6" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold">⚡ Atalho do retardatário — os 3 que resolvem 80%</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Sem tempo ou energia pra 10 templates? Sem problema. <strong class="text-emerald-400">Três deles cobrem 80% do uso real de quem está começando</strong> — porque resumir, escrever mensagens e entender coisas novas é o que todo mundo faz toda semana.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-dark-800 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-1">🥇 resumo-executivo</h4>
+          <p class="text-sm text-neutral-300">Qualquer texto longo — relatório, artigo, e-mail gigante — vira 5 bullets acionáveis.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-1">🥈 email-profissional</h4>
+          <p class="text-sm text-neutral-300">Toda mensagem difícil de escrever — cobrança, pedido, resposta delicada — em 1 minuto.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-1">🥉 explica-simples</h4>
+          <p class="text-sm text-neutral-300">Qualquer assunto que te intimida, explicado no seu nível. Seu professor particular 24h.</p>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">⚡</span> A regra anti-perfeccionismo
+        </h3>
+        <p class="text-neutral-300"><strong>3 templates usados valem mais que 30 guardados.</strong> Salve os 3 acima no celular (app de notas), use durante uma semana, e só então volte pros outros 7. O perfeccionismo atrasa mais que a ignorância — e você já sabe que atraso, aqui, se transforma em vantagem.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 7 -->
+    <section id="topico-7" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xl">7</span>
+        <h2 class="text-2xl font-bold">💼 Na sua profissão — o template que mais paga</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Requalificação acontece quando a IA resolve o <strong class="text-emerald-400">SEU</strong> problema. Identifique seu perfil e comece pelo template de maior retorno — depois adapte os outros.
+      </p>
+
+      <div class="space-y-4 mb-6">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 flex items-start space-x-4">
+          <span class="text-3xl">👩‍🏫</span>
+          <div>
+            <h4 class="font-semibold mb-1">Professor → <span class="text-emerald-400 font-mono text-sm">plano-de-aula</span></h4>
+            <p class="text-sm text-neutral-400">O template 7 com [PERFIL DA TURMA] preenchido de verdade ("7º ano agitado, 35 alunos, aula depois do recreio") gera planos que parecem feitos por quem conhece sua sala. Tempo de preparação cai pela metade.</p>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 flex items-start space-x-4">
+          <span class="text-3xl">⚖️</span>
+          <div>
+            <h4 class="font-semibold mb-1">Advogado → <span class="text-emerald-400 font-mono text-sm">analisa-documento</span></h4>
+            <p class="text-sm text-neutral-400">O template 10 como primeira passada em contratos e petições: pontos de atenção em ordem de gravidade antes da sua leitura fina. SEMPRE com dados anonimizados — [PARTE A], [VALOR], [DATA].</p>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 flex items-start space-x-4">
+          <span class="text-3xl">💼</span>
+          <div>
+            <h4 class="font-semibold mb-1">Vendedor → <span class="text-emerald-400 font-mono text-sm">email-profissional (variação follow-up)</span></h4>
+            <p class="text-sm text-neutral-400">Duplique o template 2 como "followup-proposta-v1": [DESTINATÁRIO]=lead, [OBJETIVO]=retomar conversa sem parecer insistente. O follow-up que você adia por não saber como escrever sai em 40 segundos.</p>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 flex items-start space-x-4">
+          <span class="text-3xl">📊</span>
+          <div>
+            <h4 class="font-semibold mb-1">Gestor → <span class="text-emerald-400 font-mono text-sm">resumo-executivo</span></h4>
+            <p class="text-sm text-neutral-400">O template 1 sobre atas, relatórios e threads infinitas — com a frase final "decisão que este texto pede". Você entra em toda reunião sabendo o que está em jogo.</p>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 flex items-start space-x-4">
+          <span class="text-3xl">🎨</span>
+          <div>
+            <h4 class="font-semibold mb-1">Criador / Autônomo → <span class="text-emerald-400 font-mono text-sm">post-com-gancho</span></h4>
+            <p class="text-sm text-neutral-400">O template 9 com a estrutura Dor→Explicação→Exemplo→Benefício→CTA. Na Trilha 4 você vai descobrir que essa estrutura veio de engenharia reversa de posts campeões — e aprenderá a extrair a SUA.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-emerald-900/30 to-dark-800 rounded-xl border border-emerald-500/30 p-6">
+        <h3 class="text-lg font-semibold text-emerald-400 mb-3 flex items-center">
+          <span class="mr-2">🔺</span> Você completou a base da pirâmide
+        </h3>
+        <p class="text-neutral-300">Olhe o que você tem agora: entende a ferramenta (1.0), escreve prompts com as 5 partes (1.1) e possui uma biblioteca nomeada e versionada (1.2). <strong>"Prompt é a pergunta" — e você aprendeu a perguntar.</strong> Na Trilha 2, a pergunta ganha um destino: pra que você está pedindo isso?</p>
+      </div>
+    </section>
+
+    <!-- RESUMO -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-emerald-900/40 via-dark-800 to-dark-800 rounded-xl border border-emerald-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center">
+          <span class="mr-3">📚</span> Resumo do Módulo
+        </h2>
+
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3">
+            <span class="text-emerald-400 mt-1">✓</span>
+            <div><strong class="text-white">Improvisar é pagar duas vezes</strong><span class="text-neutral-400"> — em tempo (~80 min/mês) e em qualidade oscilante</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-emerald-400 mt-1">✓</span>
+            <div><strong class="text-white">Template = esqueleto fixo + variáveis [ ]</strong><span class="text-neutral-400"> — 2 a 4 colchetes, nunca 12</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-emerald-400 mt-1">✓</span>
+            <div><strong class="text-white">10 templates no bolso</strong><span class="text-neutral-400"> — do resumo executivo à análise de documento</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-emerald-400 mt-1">✓</span>
+            <div><strong class="text-white">Lugar único + nome que se acha</strong><span class="text-neutral-400"> — o-que-faz + situação + versão, com ⭐ no campeão</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-emerald-400 mt-1">✓</span>
+            <div><strong class="text-white">3 usados &gt; 30 guardados</strong><span class="text-neutral-400"> — resumo, e-mail e explica-simples cobrem 80% do início</span></div>
+          </div>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-emerald-400 mb-2">📦 Entregável deste módulo (e da trilha):</h3>
+          <p class="text-neutral-300 text-sm"><strong>Sua biblioteca pessoal de prompts</strong>: doc criado, 10 templates colados + seus 3 do módulo 1.1, todos nomeados na convenção, com ⭐ no seu favorito. Este é o 1º dos 6 artefatos do curso — guarde bem: ele cresce nas próximas trilhas.</p>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-emerald-400 mb-2">Próxima Trilha:</h3>
+          <p class="text-neutral-300">Trilha 2 — Engenharia de Intenção: o post perfeito que vendeu zero (a IA acertou a tarefa e errou o alvo)</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="modulo-1-1.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+            ← Módulo Anterior
+          </a>
+          <a href="../trilha2/index.html" class="flex-1 text-center px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-colors">
+            Próxima Trilha: Intenção →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>
