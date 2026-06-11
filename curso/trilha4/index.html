@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilha 4 — Engenharia de Aproveitamento | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+    }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento (trilha amber) */
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.06); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .hover\:border-amber-500\/30:hover { border-color: rgba(217, 119, 6, 0.25); }
+
+    /* Light mode - hovers das demais trilhas (nav) */
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    /* Light mode - boxes auxiliares */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    /* Light mode - remove gradientes (fundo uniforme) */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    /* Light mode - cores especiais */
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Light mode - SVG futurista contido */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-4">
+        TRILHA 4 · ENGENHARIA DE APROVEITAMENTO
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">📒 Engenharia de Aproveitamento</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl mb-2">
+        <strong class="text-amber-400">"Aproveitamento é o método."</strong> O que deu certo e pode virar método? Nesta trilha você aprende a registrar, estruturar e transformar acertos em padrões replicáveis — e erros em ajustes de rota.
+      </p>
+      <p class="text-neutral-400 max-w-3xl">
+        <strong class="text-neutral-300">O caso desta trilha — o acerto que se perdeu:</strong> um post performou 10× a média. Três meses depois ninguém lembra a estrutura, o prompt, o gancho. O conhecimento existiu e evaporou. Prompt, intenção e contexto estavam certos; faltou REGISTRAR e transformar em método.
+      </p>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">2</div>
+          <div class="text-xs text-neutral-400">Módulos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">14</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">~2h</div>
+          <div class="text-xs text-neutral-400">Duração</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">Médio</div>
+          <div class="text-xs text-neutral-400">Nivel</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- HERO SVG -->
+    <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+      <svg viewBox="0 0 1000 240" class="w-full h-auto" role="img" aria-label="Ciclo de aproveitamento: tentativa gera acerto, acerto é registrado como template, template vira método no playbook, playbook alimenta a biblioteca viva">
+        <defs>
+          <linearGradient id="t4h-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
+          </linearGradient>
+          <filter id="t4h-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <pattern id="t4h-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <circle cx="1.3" cy="1.3" r="1.3" fill="#fbbf24" opacity="0.10"/>
+          </pattern>
+          <marker id="t4h-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#fbbf24"/></marker>
+          <marker id="t4h-ahc" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"/></marker>
+        </defs>
+        <rect x="0" y="0" width="1000" height="240" fill="url(#t4h-grid)"/>
+        <!-- setas de flow -->
+        <g fill="none" stroke="#fbbf24" stroke-width="2" opacity="0.7">
+          <path d="M174,120 L255,120" marker-end="url(#t4h-ah)"/>
+          <path d="M421,120 L502,120" marker-end="url(#t4h-ah)"/>
+          <path d="M668,120 L749,120" marker-end="url(#t4h-ah)"/>
+        </g>
+        <!-- loop de retorno (ciano) -->
+        <path d="M875,88 C875,40 128,40 128,88" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.5" marker-end="url(#t4h-ahc)"/>
+        <text x="502" y="33" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" opacity="0.7">ciclo contínuo de melhoria</text>
+        <!-- nó 1: Tentativa -->
+        <g class="wf-a" filter="url(#t4h-glow)">
+          <rect x="28" y="88" width="146" height="64" rx="12" fill="#1f1604" stroke="#fbbf24" stroke-width="2"/>
+          <text x="101" y="114" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="15">Tentativa</text>
+          <text x="101" y="133" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="11">prompt + intenção</text>
+        </g>
+        <!-- nó 2: Acerto Registrado -->
+        <g class="wf-a" filter="url(#t4h-glow)">
+          <rect x="255" y="88" width="166" height="64" rx="12" fill="#1f1604" stroke="#fbbf24" stroke-width="2"/>
+          <text x="338" y="114" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="15">Acerto</text>
+          <text x="338" y="133" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="11">registrado + estrutura</text>
+        </g>
+        <!-- nó 3: Template/Playbook -->
+        <g class="wf-a" filter="url(#t4h-glow)">
+          <rect x="502" y="88" width="166" height="64" rx="12" fill="#1f1604" stroke="#f59e0b" stroke-width="2.5"/>
+          <text x="585" y="114" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="15">Playbook</text>
+          <text x="585" y="133" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="11">template reutilizável</text>
+        </g>
+        <!-- nó 4: Biblioteca Viva -->
+        <g class="wf-a">
+          <rect x="749" y="88" width="173" height="64" rx="12" fill="#1f1604" stroke="#38bdf8" stroke-width="2"/>
+          <text x="835" y="114" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-weight="700" font-size="15">Biblioteca</text>
+          <text x="835" y="133" text-anchor="middle" fill="#bfe6ff" font-family="Inter,sans-serif" font-size="11">viva · curada · ativa</text>
+        </g>
+        <!-- label rodapé -->
+        <text x="500" y="218" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="12" opacity="0.6">Engenharia de Aproveitamento — da tentativa ao padrão</text>
+      </svg>
+    </div>
+
+    <!-- MAPA DA TRILHA -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-6">Mapa da trilha</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="#modulo-4-1" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-amber-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-amber-400 font-bold text-sm">4.1</span>
+            <span class="text-xs text-neutral-500">~55 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-amber-400 transition-colors">🔬 Da Tentativa ao Padrão</h3>
+          <p class="text-xs text-neutral-400">Engenharia reversa do acerto</p>
+        </a>
+        <a href="#modulo-4-2" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-amber-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-amber-400 font-bold text-sm">4.2</span>
+            <span class="text-xs text-neutral-500">~50 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-amber-400 transition-colors">📚 Biblioteca Viva</h3>
+          <p class="text-xs text-neutral-400">Seu método vira ativo permanente</p>
+        </a>
+      </div>
+    </section>
+
+    <h2 class="text-2xl font-bold mb-6">Conteudo detalhado</h2>
+
+    <!-- MODULO 4.1 -->
+    <div id="modulo-4-1" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-amber-400 font-bold">4.1</span>
+          <span class="text-xs text-neutral-500">~55 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">🔬 Da Tentativa ao Padrão</h3>
+        <p class="text-neutral-400 text-sm">O post que bombou três meses atrás — você lembra o que fez de diferente? Aqui você aprende a fazer engenharia reversa do acerto, extrair a estrutura que funcionou e transformar em playbook replicável.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <!-- Tópico 1 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">💨</span>
+            <div>
+              <span class="font-medium">Por que conhecimento não registrado se perde</span>
+              <span class="text-neutral-500 text-sm ml-2">- O caso, dissecado</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O mecanismo do esquecimento organizacional: o post performou 10×, o prompt existia, a intenção estava certa, o contexto foi bem configurado — mas nada foi registrado. Três meses depois ninguém reproduz o resultado.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Acerto sem registro é sorte. Acerto registrado é método. A diferença entre quem cresce de forma consistente e quem oscila é exatamente esta camada.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Conhecimento tácito, evaporação do acerto, memória organizacional, caso-âncora T4.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 2 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">📋</span>
+            <div>
+              <span class="font-medium">O que registrar</span>
+              <span class="text-neutral-500 text-sm ml-2">- Prompts que funcionaram, respostas boas, erros recorrentes</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Os três tipos de entrada na sua ficha: (1) prompt que gerou resultado acima do esperado, (2) resposta que você usou sem editar, (3) erro que se repetiu mais de uma vez. Cada tipo tem uma captura diferente.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Registrar tudo é burocracia; não registrar nada é desperdício. Os três tipos filtram o que realmente importa — sem adicionar peso ao dia.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Triagem de registro, prompt campeão, resposta aproveitável, padrão de erro.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 3 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">🔍</span>
+            <div>
+              <span class="font-medium">Achar a estrutura por trás do acerto</span>
+              <span class="text-neutral-500 text-sm ml-2">- Dor → Explicação → Exemplo → Benefício → CTA</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A engenharia reversa em 5 perguntas: O que doía no leitor? Como eu expliquei? Qual exemplo usei? Qual benefício ficou claro? O que pedi pra fazer? Essa estrutura está em todo conteúdo que performa — mesmo quando o autor não percebe.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Quem sabe nomeier o que fez de certo consegue repetir. Quem só sente que "ficou bom" depende do humor do dia.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Estrutura DEEBC, engenharia reversa, padrão latente, mapeamento do acerto.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 4 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">⚙️</span>
+            <div>
+              <span class="font-medium">Acerto → template · erro → ajuste · repetição → processo</span>
+              <span class="text-neutral-500 text-sm ml-2">- A lógica dos três caminhos</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Cada resultado tem um destino certo: o acerto vira template (você documenta a estrutura); o erro vira ajuste (você registra o que não funcionou e por quê); o que se repete vira processo (você cria um passo a passo).</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Sem essa lógica, todo resultado fica no mesmo arquivo bagunçado. Com ela, cada entrada já sabe onde vai — e o sistema se organiza sozinho.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Triagem de resultado, template, ajuste, processo, destino do registro.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 5 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">📄</span>
+            <div>
+              <span class="font-medium">Seu primeiro playbook</span>
+              <span class="text-neutral-500 text-sm ml-2">- 1 página por processo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um playbook de 1 página tem: nome do processo, quando usar, passo a passo (3–5 etapas), prompt padrão, exemplo de resultado esperado, e o que ajustar quando não funcionar. Uma página. Nada mais.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Um playbook de 1 página você usa. Um manual de 20 páginas você guarda e esquece. A restrição de tamanho não é limitação — é o que garante que o documento vive.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Playbook, 1 página, etapas, prompt padrão, exemplo de saída.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 6 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">📊</span>
+            <div>
+              <span class="font-medium">Métricas simples</span>
+              <span class="text-neutral-500 text-sm ml-2">- O que conta como "deu certo"</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Antes de registrar, defina o critério: "deu certo" é usar sem editar? Ter sido aprovado de primeira? Economizar 30 min? Cada processo tem sua métrica — e ela precisa ser declarada antes, não inventada depois.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Sem critério, tudo parece ter funcionado razoavelmente. Com critério, você sabe exatamente quais métodos evoluir e quais aposentar.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Métrica de sucesso, critério declarado, sinal de aproveitamento, linha de corte.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 7 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">⏰</span>
+            <div>
+              <span class="font-medium">Rotina de captura</span>
+              <span class="text-neutral-500 text-sm ml-2">- 5 min no fim do dia</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Uma rotina diária de 5 minutos: abrir a ficha, responder três perguntas (o que funcionou hoje? o que repeti? o que ajustaria?) e fechar. Sem reunião, sem relatório, sem cerimônia.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">O conhecimento evaporou porque ninguém criou o hábito de captura. 5 minutos diários compõem mais valor que um workshop mensal — porque o timing é enquanto o contexto ainda está fresco.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Rotina de captura, 5 minutos, janela de frescor, consistência mínima.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-4-1')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-4-1.html" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- MODULO 4.2 -->
+    <div id="modulo-4-2" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-amber-400 font-bold">4.2</span>
+          <span class="text-xs text-neutral-500">~50 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">📚 Biblioteca Viva</h3>
+        <p class="text-neutral-400 text-sm">Prompts, briefings e playbooks num lugar só — organizados, versionados e curados. Você aprende a montar uma biblioteca que não envelhece, incluindo como compartilhá-la e como ela se torna o seu ativo mais valioso.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <!-- Tópico 1 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">🗂️</span>
+            <div>
+              <span class="font-medium">Organizar num lugar só</span>
+              <span class="text-neutral-500 text-sm ml-2">- Prompts, briefings e playbooks juntos</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A estrutura de 3 pastas: /prompts (inputs testados), /playbooks (processos documentados) e /briefings (contextos reutilizáveis). Simples, plano, sem hierarquia de 7 níveis que ninguém navega.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Biblioteca espalhada em 4 ferramentas não é biblioteca. A decisão de onde vai cada tipo é o que transforma coleção em sistema.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Estrutura de 3 pastas, lugar único, friccao zero, sistema plano.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 2 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">🏷️</span>
+            <div>
+              <span class="font-medium">Nomeação e versão</span>
+              <span class="text-neutral-500 text-sm ml-2">- v1, v2, "campeão atual"</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Convenção de nome: [o-que-faz]-[situação]-v[número]. Exemplo: post-gancho-linkedin-v3. O "campeão atual" é o que está em uso; versões anteriores ficam como histórico. Nunca deletar — aposentar.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Com 5 itens você lembra de tudo. Com 30, só a convenção de nomes te salva. E o histórico de versões é onde você vê sua própria evolução.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Convenção de nomes, versionamento, campeão atual, aposentadoria (não deleção).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 3 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">☑️</span>
+            <div>
+              <span class="font-medium">Checklists a partir de processos repetidos</span>
+              <span class="text-neutral-500 text-sm ml-2">- Do texto livre ao passo a passo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Quando um processo se repete três vezes da mesma forma, ele vira checklist. Você transcreve o passo a passo e adiciona ao playbook. O checklist não é burocracia — é a memória externalizada do processo que funciona.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Checklist elimina o erro de omissão — o tipo de erro que acontece não por incompetência, mas porque você estava focado em outra coisa quando chegou no passo 4.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Checklist, regra das 3 repetições, memória externalizada, erro de omissão.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 4 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🗑️</span>
+            <div>
+              <span class="font-medium">Curadoria</span>
+              <span class="text-neutral-500 text-sm ml-2">- Aposentar o que parou de funcionar</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Uma revisão trimestral de 15 minutos: o que ainda uso? O que parou de funcionar? O que mudou no contexto? Itens que não passam no critério vão para a pasta /aposentados — nunca se deletam, mas saem da navegação ativa.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Biblioteca que só cresce vira arquivo. Curadoria é o que mantém a biblioteca viva — ativa, curta, relevante, com sinal-ruído alto.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Revisão trimestral, critério de curadoria, pasta /aposentados, sinal-ruído.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 5 -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">🤝</span>
+            <div>
+              <span class="font-medium">Compartilhar com equipe e clientes</span>
+              <span class="text-neutral-500 text-sm ml-2">- Seu método vira ativo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Quando sua biblioteca está organizada, ela pode ser compartilhada. Com a equipe como onboarding acelerado; com clientes como diferencial de serviço; como conteúdo público como autoridade de método.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Método documentado tem valor além de quem o criou. É o que transforma conhecimento pessoal em ativo organizacional ou em produto.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Ativo de método, onboarding por biblioteca, autoridade documental, compartilhamento seletivo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 6 - Atalho do retardatário -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">⚡</span>
+            <div>
+              <span class="font-medium">Atalho do retardatário</span>
+              <span class="text-neutral-500 text-sm ml-2">- Registre só os 3 prompts que mais usa</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Para quem está começando agora: esqueça a biblioteca completa. Identifique os 3 prompts que você usa toda semana, documente cada um em 1 parágrafo, e guarde num único documento. É o mínimo viável de aproveitamento.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Qualquer sistema começa com 3 itens. A complexidade vem depois, quando você já sente o valor de ter o método documentado. Começar pequeno é a única forma de começar de verdade.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Mínimo viável de método, top 3 prompts, início sem fricção, escada de maturidade.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tópico 7 - Na sua profissão -->
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">👔</span>
+            <div>
+              <span class="font-medium">Na sua profissão</span>
+              <span class="text-neutral-500 text-sm ml-2">- 5 perfis, como cada um usa a biblioteca</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-amber-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Professor: banco de planos por turma e nível. Advogado: banco de teses e modelos de peça. Vendedor: playbook de objeções com resposta testada. Gestor: decisões registradas com critérios. Criador: estruturas campeãs por formato e plataforma.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">O método de aproveitamento é universal, mas a biblioteca é específica da profissão. Ver seu perfil concreto elimina o "mas no meu caso não funciona" e acelera a adoção.</p>
+              </div>
+              <div>
+                <span class="text-amber-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Biblioteca por profissão, professor, advogado, vendedor, gestor, criador.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-4-2')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-4-2.html" class="px-4 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO RODAPÉ -->
+    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+      <a href="../../index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 hover:bg-dark-600 rounded-lg font-semibold transition-colors">
+        ← Voltar ao Início
+      </a>
+      <a href="../trilha5/index.html" class="flex-1 text-center px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold transition-colors">
+        Próxima Trilha: Arquitetura →
+      </a>
+    </div>
+
+  </main>
+
+  <!-- MODAIS -->
+  <div id="modal-4-1" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <span class="text-amber-400 font-bold">4.1</span>
+          <span class="font-semibold">Da Tentativa ao Padrão</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-4-1.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+  <div id="modal-4-2" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <span class="text-amber-400 font-bold">4.2</span>
+          <span class="font-semibold">Biblioteca Viva</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-4-2.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da IA · <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTopic(btn) {
+      const explanation = btn.closest('.topic-item').querySelector('.topic-explanation');
+      explanation.classList.toggle('active');
+    }
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(modal => modal.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 6.1 — O ciclo que aprende | Trilha 6 | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+
+    /* Light mode overrides */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    html:not(.dark) .text-rose-400 { color: #9f1239; }
+    html:not(.dark) .bg-rose-500\/20 { background-color: rgba(225, 29, 72, 0.12); }
+    html:not(.dark) .bg-rose-500\/10 { background-color: rgba(225, 29, 72, 0.08); }
+    html:not(.dark) .border-rose-500\/30 { border-color: rgba(225, 29, 72, 0.25); }
+    html:not(.dark) .hover\:bg-rose-500\/30:hover { background-color: rgba(225, 29, 72, 0.18); }
+    html:not(.dark) .bg-rose-900\/20 { background-color: rgba(225, 29, 72, 0.06); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-rose-400 { color: #9f1239; }
+    html:not(.dark) .hover\:border-rose-500\/30:hover { border-color: rgba(225, 29, 72, 0.25); }
+
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5, 150, 105, 0.06); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-rose-400 bg-rose-500/10">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-rose-400">Inicio</a>
+      <span>/</span>
+      <a href="index.html" class="hover:text-rose-400">Trilha 6</a>
+      <span>/</span>
+      <span class="text-rose-400">Modulo 6.1</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-rose-900/30 via-dark-800 to-dark-800 py-10 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-400 text-xs font-semibold rounded-full mb-4">
+        MODULO 6.1
+      </span>
+      <h1 class="text-2xl sm:text-3xl font-bold mb-3">🔁 O ciclo que aprende</h1>
+      <p class="text-neutral-400 max-w-3xl">Você chegou até aqui porque aprendeu a montar o sistema. Agora vem a camada que separa quem cresce de quem estagna: fechar o loop. Cada resultado é uma aula — se você souber extrair o porquê.</p>
+      <div class="grid grid-cols-4 gap-3 mt-6 max-w-xl">
+        <div class="bg-dark-800/50 rounded-lg p-2 border border-dark-600 text-center">
+          <div class="text-lg font-bold text-rose-400">7</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-2 border border-dark-600 text-center">
+          <div class="text-lg font-bold text-rose-400">~50</div>
+          <div class="text-xs text-neutral-400">Minutos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-2 border border-dark-600 text-center">
+          <div class="text-lg font-bold text-rose-400">Avançado</div>
+          <div class="text-xs text-neutral-400">Nível</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-2 border border-dark-600 text-center">
+          <div class="text-lg font-bold text-rose-400">Prática</div>
+          <div class="text-xs text-neutral-400">Tipo</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- TÓPICO 1: Comemorar não basta -->
+    <section id="topico-1" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">1</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Comemorar não basta — extrair o porquê</h2>
+          <p class="text-neutral-400 mt-1">O vídeo bombou. O canal seguiu igual. Seis meses depois ninguém sabe replicar.</p>
+        </div>
+      </div>
+
+      <!-- Caso âncora -->
+      <div class="bg-gradient-to-br from-rose-900/30 to-dark-800 rounded-xl border border-rose-500/30 p-6 mb-6">
+        <h3 class="font-semibold text-rose-400 mb-3">🎬 O caso que define esta trilha</h3>
+        <p class="text-neutral-300 mb-3">Um criador de conteúdo publica um vídeo que faz 50× a média do canal. Reação natural: comemora, agradece nos comentários, passa para o próximo. Seis meses depois, o canal está na média de sempre — e ninguém consegue explicar por que aquele vídeo explodiu.</p>
+        <p class="text-neutral-300">O sistema estava rodando. Não estava evoluindo. A diferença: <strong class="text-rose-400">faltou o ciclo que transforma resultado em aprendizado.</strong></p>
+      </div>
+
+      <!-- Grid fazer/não fazer -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-5">
+          <h4 class="font-semibold text-red-400 mb-3">✗ Sistema só rodando</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Celebra o resultado, segue em frente</li>
+            <li>• Não anota o que foi diferente</li>
+            <li>• Atribui o sucesso à sorte ou ao algoritmo</li>
+            <li>• Próximo ciclo começa do zero</li>
+            <li>• Em 6 meses: mesma média de antes</li>
+          </ul>
+        </div>
+        <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-3">✓ Sistema evoluindo</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Celebra 5 minutos, analisa 30</li>
+            <li>• Documenta as variáveis que diferiram</li>
+            <li>• Identifica o fator replicável</li>
+            <li>• Atualiza o playbook antes do próximo ciclo</li>
+            <li>• Em 6 meses: nova média 3–5× acima</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Ciclo aberto</span><p class="text-neutral-400 text-xs mt-1">resultado sem extração</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Ciclo fechado</span><p class="text-neutral-400 text-xs mt-1">resultado → aprendizado</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Análise</span><p class="text-neutral-400 text-xs mt-1">extração deliberada</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Artefato</span><p class="text-neutral-400 text-xs mt-1">aprendizado registrado</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 2: As 8 perguntas pós-resultado — TIMELINE -->
+    <section id="topico-2" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">2</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">As 8 perguntas pós-resultado</h2>
+          <p class="text-neutral-400 mt-1">O protocolo que transforma qualquer resultado em dado acionável.</p>
+        </div>
+      </div>
+
+      <p class="text-neutral-300 mb-6">Aplique após qualquer resultado relevante — positivo ou negativo. São 30 minutos que valem mais do que o próximo projeto inteiro.</p>
+
+      <!-- Protocolo box mono -->
+      <div class="bg-dark-800 border border-rose-500/30 rounded-xl p-6 mb-6 font-mono text-sm">
+        <div class="text-rose-400 font-bold mb-4 text-base font-sans">📋 Protocolo pós-resultado — Kit T6</div>
+        <div class="space-y-3">
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">1.</span>
+            <div><span class="text-neutral-200">TEMA:</span> <span class="text-neutral-400">o assunto real que ressoou (vs. o que você achava que ia ressoar)</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">2.</span>
+            <div><span class="text-neutral-200">TÍTULO:</span> <span class="text-neutral-400">qual palavra ou estrutura de título fez diferença</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">3.</span>
+            <div><span class="text-neutral-200">IMAGEM:</span> <span class="text-neutral-400">thumbnail/visual — o que foi diferente</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">4.</span>
+            <div><span class="text-neutral-200">PROMESSA:</span> <span class="text-neutral-400">qual dor/desejo específico foi ativado na abertura</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">5.</span>
+            <div><span class="text-neutral-200">ESTRUTURA:</span> <span class="text-neutral-400">como o conteúdo foi organizado (lista, história, comparação)</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">6.</span>
+            <div><span class="text-neutral-200">COMENTÁRIOS:</span> <span class="text-neutral-400">as 3 palavras mais repetidas nos comentários positivos</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">7.</span>
+            <div><span class="text-neutral-200">REPETIR:</span> <span class="text-neutral-400">qual elemento é replicável no próximo ciclo? (anote exatamente)</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-rose-400 font-bold w-5 flex-shrink-0">8.</span>
+            <div><span class="text-neutral-200">AJUSTAR:</span> <span class="text-neutral-400">o que NÃO repetir — o que parece bom mas não foi o fator</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Protocolo fixo</span><p class="text-neutral-400 text-xs mt-1">elimina seletividade</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">8 variáveis</span><p class="text-neutral-400 text-xs mt-1">cobertura sistemática</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Fator replicável</span><p class="text-neutral-400 text-xs mt-1">o que muda o próximo</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">30 min</span><p class="text-neutral-400 text-xs mt-1">tempo mínimo viável</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 3: Feedback como combustível -->
+    <section id="topico-3" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">3</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Feedback como combustível</h2>
+          <p class="text-neutral-400 mt-1">Três fontes que a maioria ignora — e que contêm o sinal mais honesto do sistema.</p>
+        </div>
+      </div>
+
+      <!-- SVG inline — 3 fontes de feedback -->
+      <div class="rounded-xl border border-rose-500/30 bg-dark-900/40 p-3 mb-6 overflow-hidden">
+        <svg viewBox="0 0 900 180" class="w-full h-auto" role="img" aria-label="Três fontes de feedback — Cliente, Dados e Erro — convergem no Sistema de Evolução">
+          <defs>
+            <linearGradient id="m61-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#f43f5e"/>
+            </linearGradient>
+            <filter id="m61-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="m61-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="1.2" cy="1.2" r="1.2" fill="#f43f5e" opacity="0.09"/>
+            </pattern>
+            <marker id="m61-ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L7,4 L0,8 L2,4 Z" fill="#fb7185"/></marker>
+            <marker id="m61-ahc" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L7,4 L0,8 L2,4 Z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="900" height="180" fill="url(#m61-grid)"/>
+          <!-- Fonte 1: Cliente -->
+          <rect x="30" y="30" width="130" height="50" rx="10" fill="#1a0a10" stroke="#fb7185" stroke-width="1.8"/>
+          <text x="95" y="52" text-anchor="middle" fill="#fb7185" font-family="Inter,sans-serif" font-weight="700" font-size="14">🧑‍💼 Cliente</text>
+          <text x="95" y="70" text-anchor="middle" fill="#fecdd3" font-family="Inter,sans-serif" font-size="10">reação, pedido, reclamação</text>
+          <!-- Fonte 2: Dados -->
+          <rect x="30" y="95" width="130" height="50" rx="10" fill="#1a0a10" stroke="#fb7185" stroke-width="1.8"/>
+          <text x="95" y="117" text-anchor="middle" fill="#fb7185" font-family="Inter,sans-serif" font-weight="700" font-size="14">📊 Dados</text>
+          <text x="95" y="135" text-anchor="middle" fill="#fecdd3" font-family="Inter,sans-serif" font-size="10">métricas, engajamento, uso</text>
+          <!-- Fonte 3: Erro -->
+          <rect x="200" y="62" width="130" height="50" rx="10" fill="#1a0a10" stroke="#38bdf8" stroke-width="1.8"/>
+          <text x="265" y="84" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-weight="700" font-size="14">⚠️ Erro</text>
+          <text x="265" y="102" text-anchor="middle" fill="#bae6fd" font-family="Inter,sans-serif" font-size="10">o que falhou e por quê</text>
+          <!-- Setas para centro -->
+          <path d="M160,55 L390,88" fill="none" stroke="#fb7185" stroke-width="1.5" opacity="0.6" marker-end="url(#m61-ah)"/>
+          <path d="M160,120 L390,92" fill="none" stroke="#fb7185" stroke-width="1.5" opacity="0.6" marker-end="url(#m61-ah)"/>
+          <path d="M330,87 L390,90" fill="none" stroke="#38bdf8" stroke-width="1.5" opacity="0.7" marker-end="url(#m61-ahc)"/>
+          <!-- Centro: Sistema -->
+          <g filter="url(#m61-glow)"><rect x="390" y="60" width="180" height="64" rx="14" fill="#2a0f16" stroke="url(#m61-grad)" stroke-width="2.5"/></g>
+          <text x="480" y="88" text-anchor="middle" fill="#fb7185" font-family="Inter,sans-serif" font-weight="700" font-size="16">Sistema</text>
+          <text x="480" y="108" text-anchor="middle" fill="#fecdd3" font-family="Inter,sans-serif" font-size="11">de Evolução</text>
+          <!-- Saída -->
+          <path d="M570,92 L690,92" fill="none" stroke="#fb7185" stroke-width="2" opacity="0.7" marker-end="url(#m61-ah)"/>
+          <rect x="690" y="67" width="160" height="50" rx="10" fill="#0f2a1a" stroke="#34d399" stroke-width="1.8"/>
+          <text x="770" y="89" text-anchor="middle" fill="#34d399" font-family="Inter,sans-serif" font-weight="700" font-size="13">Artefato</text>
+          <text x="770" y="107" text-anchor="middle" fill="#a7e8cd" font-family="Inter,sans-serif" font-size="10">atualizado e melhorado</text>
+        </svg>
+      </div>
+
+      <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-5 mb-6">
+        <h4 class="font-semibold text-blue-400 mb-3">🔍 O sinal mais subestimado: o erro</h4>
+        <p class="text-neutral-300 text-sm">A maioria das pessoas processa apenas feedback positivo. Cliente que elogia, post que engaja, tarefa que deu certo. Mas o erro é o sinal mais honesto que o sistema envia: ele aponta exatamente onde a hipótese estava errada — e hipótese errada corrigida vale mais do que hipótese certa confirmada.</p>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Feedback cliente</span><p class="text-neutral-400 text-xs mt-1">sinal externo direto</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Métricas</span><p class="text-neutral-400 text-xs mt-1">sinal quantitativo</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Erro documentado</span><p class="text-neutral-400 text-xs mt-1">hipótese falsificada</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">3 fontes</span><p class="text-neutral-400 text-xs mt-1">cobertura completa</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 4: Fechar o loop -->
+    <section id="topico-4" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">4</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Fechar o loop</h2>
+          <p class="text-neutral-400 mt-1">Aprendizado que não vira artefato não existe no próximo ciclo.</p>
+        </div>
+      </div>
+
+      <p class="text-neutral-300 mb-6">O loop só fecha quando o aprendizado deixa de ser intenção e se torna mudança concreta em algum artefato do seu sistema. "Vou fazer diferente da próxima vez" não fecha o loop — atualizar o prompt fecha.</p>
+
+      <!-- Timeline: como fechar o loop -->
+      <div class="space-y-5 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center">
+            <span class="text-rose-400 font-bold text-sm">1</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600">
+            <h4 class="font-semibold text-white mb-1">Identifique o aprendizado específico</h4>
+            <p class="text-sm text-neutral-400 mb-2">Não "aprendi sobre título", mas "títulos com número específico (ex.: 7, 11, 23) tiveram CTR 40% maior nos meus dados".</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center">
+            <span class="text-rose-400 font-bold text-sm">2</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600">
+            <h4 class="font-semibold text-white mb-1">Localize o artefato que deve ser atualizado</h4>
+            <p class="text-sm text-neutral-400 mb-2">Qual prompt, briefing ou playbook contém a instrução sobre títulos? Abra esse arquivo.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center">
+            <span class="text-rose-400 font-bold text-sm">3</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600">
+            <h4 class="font-semibold text-white mb-1">Faça a atualização agora (não depois)</h4>
+            <p class="text-sm text-neutral-400 mb-2">Adicione a regra aprendida. Versione: v1.0 → v1.1. O loop só fecha quando o arquivo muda.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center">
+            <span class="text-rose-400 font-bold text-sm">4</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-5 border border-dark-600">
+            <h4 class="font-semibold text-white mb-1">Anote no log de decisões</h4>
+            <p class="text-sm text-neutral-400 mb-2">Uma linha: data + o que mudou + por quê. Em 6 meses você vai agradecer por ter esse histórico.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Artefato atualizado</span><p class="text-neutral-400 text-xs mt-1">loop fechado</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Versionamento</span><p class="text-neutral-400 text-xs mt-1">v1.0 → v1.1</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Log de decisão</span><p class="text-neutral-400 text-xs mt-1">memória persistente</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Agora, não depois</span><p class="text-neutral-400 text-xs mt-1">o menor passo possível</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 5: Refinamento contínuo -->
+    <section id="topico-5" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">5</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Refinamento contínuo de prompts/briefings/playbooks</h2>
+          <p class="text-neutral-400 mt-1">A versão 1.0 é um rascunho. Quem usa v4.0 opera em outra dimensão.</p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-rose-900/30 to-dark-800 rounded-xl border border-rose-500/30 p-6 mb-6">
+        <h3 class="font-semibold text-rose-400 mb-3">📈 O que muda de v1.0 para v4.0?</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+            <div class="text-rose-400 font-bold text-lg mb-1">v1.0</div>
+            <p class="text-sm text-neutral-400">Genérico. Funciona em 60% dos casos. Você retrabalha os outros 40%.</p>
+          </div>
+          <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+            <div class="text-rose-400 font-bold text-lg mb-1">v2.0–3.0</div>
+            <p class="text-sm text-neutral-400">Incorporou os casos de borda. Taxa de aproveitamento sobe para 80–85%.</p>
+          </div>
+          <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+            <div class="text-rose-400 font-bold text-lg mb-1">v4.0+</div>
+            <p class="text-sm text-neutral-400">Específico ao seu contexto. 90–95% aproveitável. Você parou de retrabalhar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid fazer/não fazer -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-5">
+          <h4 class="font-semibold text-red-400 mb-3">✗ Sem refinamento</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Usa o mesmo prompt há 6 meses</li>
+            <li>• Reescreve manualmente o que a IA errou</li>
+            <li>• Não sabe dizer qual versão está usando</li>
+            <li>• Cada tarefa começa quase do zero</li>
+          </ul>
+        </div>
+        <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-3">✓ Com refinamento</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Prompts têm número de versão explícito</li>
+            <li>• Cada retrabalho vira instrução nova na próxima versão</li>
+            <li>• Sabe quando e por que cada versão mudou</li>
+            <li>• Em 6 meses: tarefa leva 1/3 do tempo original</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Versionamento</span><p class="text-neutral-400 text-xs mt-1">v1.0, v2.0...</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Retrabalho → regra</span><p class="text-neutral-400 text-xs mt-1">não repetir o erro</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Qualidade composta</span><p class="text-neutral-400 text-xs mt-1">cada ciclo melhora</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Prompt v4.0</span><p class="text-neutral-400 text-xs mt-1">12 ciclos incorporados</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 6: Histórico de decisões -->
+    <section id="topico-6" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">6</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Histórico de decisões como ativo</h2>
+          <p class="text-neutral-400 mt-1">O manual do seu sistema que ninguém mais tem.</p>
+        </div>
+      </div>
+
+      <div class="bg-blue-900/20 border border-blue-500/30 rounded-xl p-5 mb-6">
+        <h4 class="font-semibold text-blue-400 mb-3">🔍 Por que o histórico vale mais do que os artefatos</h4>
+        <p class="text-neutral-300 text-sm mb-3">Um prompt v4.0 te diz O QUE funciona. O histórico de decisões te diz POR QUE cada mudança foi feita. Com o histórico, você consegue:</p>
+        <ul class="space-y-1 text-sm text-neutral-300">
+          <li>• Adaptar o sistema para contextos novos (porque entende a lógica, não só o artefato)</li>
+          <li>• Evitar reintroduzir algo que já foi testado e descartado</li>
+          <li>• Ensinar o sistema para outra pessoa sem perder o raciocínio por trás</li>
+          <li>• Recuperar decisões antigas quando o contexto volta a ser relevante</li>
+        </ul>
+      </div>
+
+      <!-- Formato mínimo do log -->
+      <div class="bg-dark-800 border border-rose-500/30 rounded-xl p-6 mb-6 font-mono text-sm">
+        <div class="text-rose-400 font-bold mb-3 text-base font-sans">📝 Formato mínimo do log de decisões</div>
+        <div class="space-y-2 text-neutral-300">
+          <div class="border-b border-dark-600 pb-2">
+            <span class="text-rose-400">2026-01-15</span> <span class="text-neutral-400">|</span> <span class="text-neutral-200">prompt-titulo v1.0 → v1.1</span> <span class="text-neutral-400">|</span> <span class="text-neutral-400">adicionei instrução "número específico"</span> <span class="text-neutral-400">|</span> <span class="text-neutral-500">CTR 40% maior no vídeo de jan/26</span>
+          </div>
+          <div class="border-b border-dark-600 pb-2">
+            <span class="text-rose-400">2026-02-03</span> <span class="text-neutral-400">|</span> <span class="text-neutral-200">briefing-cliente v2.0 → v2.1</span> <span class="text-neutral-400">|</span> <span class="text-neutral-400">removido campo "público-alvo" genérico</span> <span class="text-neutral-400">|</span> <span class="text-neutral-500">cliente B usou e disse que ficou vago</span>
+          </div>
+          <div>
+            <span class="text-rose-400">2026-03-11</span> <span class="text-neutral-400">|</span> <span class="text-neutral-200">playbook-post v1.0</span> <span class="text-neutral-400">|</span> <span class="text-neutral-400">criado do zero com estrutura Dor→Ex→CTA</span> <span class="text-neutral-400">|</span> <span class="text-neutral-500">baseado no post de mar/26 que viralizou</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">💡 Conceitos-chave</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Log de decisão</span><p class="text-neutral-400 text-xs mt-1">data + mudança + motivo</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Raciocínio</span><p class="text-neutral-400 text-xs mt-1">o porquê preservado</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Ativo intangível</span><p class="text-neutral-400 text-xs mt-1">o que ninguém copia</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Formato mínimo</span><p class="text-neutral-400 text-xs mt-1">1 linha por decisão</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TÓPICO 7: Sinais de evolução -->
+    <section id="topico-7" class="mb-12">
+      <div class="flex items-start space-x-4 mb-6">
+        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center">
+          <span class="text-rose-400 font-bold text-lg">7</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold">Sinais de que o sistema evolui de verdade</h2>
+          <p class="text-neutral-400 mt-1">Indicadores objetivos que eliminam a ilusão de progresso.</p>
+        </div>
+      </div>
+
+      <p class="text-neutral-300 mb-6">É fácil se sentir evoluindo enquanto apenas fica ocupado. Os indicadores abaixo são objetivos — ou o artefato mudou ou não mudou.</p>
+
+      <!-- Grid sinais positivos/negativos -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-emerald-900/20 rounded-xl border border-emerald-500/30 p-5">
+          <h4 class="font-semibold text-emerald-400 mb-3">✓ Sistema evoluindo — sinais</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Algum prompt tem versão ≥ 2.0</li>
+            <li>• Pelo menos 1 artefato atualizado nos últimos 30 dias</li>
+            <li>• Existe pelo menos 1 erro documentado no log</li>
+            <li>• Tempo médio de tarefa recorrente está caindo</li>
+            <li>• Você consegue explicar por que a versão atual é melhor que a anterior</li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-5">
+          <h4 class="font-semibold text-red-400 mb-3">✗ Sistema só rodando — sinais</h4>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li>• Todos os prompts ainda são v1.0</li>
+            <li>• Não houve nenhuma atualização de artefato neste mês</li>
+            <li>• Erros são esquecidos depois de resolvidos</li>
+            <li>• Tarefas recorrentes levam o mesmo tempo de sempre</li>
+            <li>• "Evolução" existe só como intenção, não como arquivo</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 border border-primary/30 rounded-xl p-5">
+        <h4 class="font-semibold text-primary mb-2">🎯 Prática: aplique agora</h4>
+        <p class="text-neutral-300 text-sm mb-3">Pegue 1 trabalho recente. Aplique as 8 perguntas pós-resultado. Identifique 1 artefato que deve ser atualizado com o aprendizado. Atualize-o. Você acabou de fechar o primeiro loop desta trilha.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Indicadores</span><p class="text-neutral-400 text-xs mt-1">objetivos, não subjetivos</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Auditoria</span><p class="text-neutral-400 text-xs mt-1">mensal, 15 min</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Loop aberto</span><p class="text-neutral-400 text-xs mt-1">detectável e corrigível</p></div>
+          <div class="bg-dark-800 rounded-lg p-3 text-center"><span class="text-rose-400 font-semibold">Evolução real</span><p class="text-neutral-400 text-xs mt-1">arquivo mudou = evoluiu</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESUMO -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-rose-900/40 via-dark-800 to-dark-800 rounded-xl border border-rose-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center">
+          <span class="mr-3">📚</span> Resumo do Módulo 6.1
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="space-y-2">
+            <h3 class="font-semibold text-rose-400 mb-2">O que você aprendeu:</h3>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">Por que comemorar sem extrair é sorte desperdiçada</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">O protocolo das 8 perguntas pós-resultado</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">As 3 fontes de feedback (cliente, dados, erro)</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">Como fechar o loop: aprendizado vira artefato</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">Refinamento contínuo: v1.0 → v4.0</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">Histórico de decisões como ativo único</span></div>
+            <div class="flex items-center space-x-2 text-sm"><span class="text-emerald-400">✓</span><span class="text-neutral-300">Sinais objetivos de evolução vs. apenas rodar</span></div>
+          </div>
+          <div>
+            <h3 class="font-semibold text-rose-400 mb-2">Ritual de Evolução — Kit T6:</h3>
+            <div class="bg-dark-800/60 border border-dark-600 rounded-lg p-4 font-mono text-xs space-y-1.5">
+              <p class="text-neutral-200">Funcionou: [...]</p>
+              <p class="text-neutral-400">Por quê: [...]</p>
+              <p class="text-neutral-200">Ajustar: [...]</p>
+              <p class="text-neutral-400">Vira regra nova? [...]</p>
+              <p class="text-neutral-200">Próximo ciclo começa com: [...]</p>
+            </div>
+            <p class="text-xs text-neutral-500 mt-2">Aplique após cada entrega relevante. 30 minutos que valem mais do que o próximo projeto.</p>
+          </div>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-rose-400 mb-2">📦 Entregável deste módulo:</h3>
+          <p class="text-neutral-300 text-sm">Faça <strong>1 retrô</strong> de um trabalho recente seu aplicando as 8 perguntas pós-resultado — e saia com <strong>3 melhorias concretas</strong> pro próximo ciclo. Guarde junto ao Ritual de Evolução (Kit T6): é o motor que vai alimentar o capstone do módulo 6.2.</p>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-rose-400 mb-2">Próximo Módulo:</h3>
+          <p class="text-neutral-300">6.2 — Inteligência operacional acumulada (CAPSTONE): as 6 camadas unidas, a vantagem composta, o Mapa do seu Sistema de Conhecimento de IA e como apresentá-lo ao mundo.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+            ← Índice da Trilha
+          </a>
+          <a href="modulo-6-2.html" class="flex-1 text-center px-6 py-3 bg-rose-600 text-white rounded-lg font-semibold hover:bg-rose-500 transition-colors">
+            Próximo Módulo →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    function updateIcons() {
+      if (document.documentElement.classList.contains('dark')) {
+        darkIcon.classList.add('hidden'); lightIcon.classList.remove('hidden');
+      } else {
+        lightIcon.classList.add('hidden'); darkIcon.classList.remove('hidden');
+      }
+    }
+    updateIcons();
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      updateIcons();
+    });
+  </script>
+</body>
+</html>

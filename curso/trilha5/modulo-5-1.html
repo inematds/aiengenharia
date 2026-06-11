@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 5.1 — Pensar em sistemas | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode overrides */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - teal accent */
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.06); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-teal-400 bg-teal-500/10">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-teal-400">Inicio</a>
+      <span>/</span>
+      <a href="index.html" class="hover:text-teal-400">Trilha 5</a>
+      <span>/</span>
+      <span class="text-teal-400">Modulo 5.1</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-teal-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-teal-500/20 text-teal-400 text-xs font-semibold rounded-full mb-4">
+        MODULO 5.1
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🔄 Pensar em sistemas, não em comandos</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">
+        O caso do gargalo invisível: dez prompts excelentes, biblioteca organizada — e o trabalho ainda trava porque cada etapa depende de você lembrar de fazer. Este módulo ensina a ver o que está faltando: o processo que conecta as peças.
+      </p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">7</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">45</div>
+          <div class="text-xs text-neutral-400">Minutos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">Médio</div>
+          <div class="text-xs text-neutral-400">Nível</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">No-code</div>
+          <div class="text-xs text-neutral-400">Tipo</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- TOPICO 1 -->
+    <section id="topico-1" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold">➡️ De comando isolado a fluxo</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Um comando isolado pergunta: "o que a IA faz?" Um fluxo pergunta: <strong class="text-teal-400">"como as etapas se conectam para produzir um resultado previsível?"</strong> A diferença é que o fluxo não depende de você estar no meio lembrando o que vem depois.
+      </p>
+
+      <!-- SVG fluxo linear teal com seta de retorno ciano -->
+      <div class="rounded-2xl border border-teal-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+        <svg viewBox="0 0 900 200" class="w-full h-auto" role="img" aria-label="Fluxo de produção de conteúdo: Ideia entra, IA interpreta e estrutura, IA redige, Avaliação com critérios — se ok vai para Publicação, se não ok seta ciano de retorno volta para Ajuste e retorna ao rascunho">
+          <defs>
+            <linearGradient id="m51-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#14b8a6"/>
+            </linearGradient>
+            <filter id="m51-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="m51-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1.3" cy="1.3" r="1.3" fill="#14b8a6" opacity="0.12"/>
+            </pattern>
+            <marker id="m51-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#2dd4bf"/></marker>
+            <marker id="m51-ahc" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="900" height="200" fill="url(#m51-grid)"/>
+          <!-- setas principais -->
+          <line x1="118" y1="95" x2="166" y2="95" stroke="#2dd4bf" stroke-width="2" fill="none" opacity="0.7" marker-end="url(#m51-ah)"/>
+          <line x1="282" y1="95" x2="330" y2="95" stroke="#2dd4bf" stroke-width="2" fill="none" opacity="0.7" marker-end="url(#m51-ah)"/>
+          <line x1="446" y1="95" x2="494" y2="95" stroke="#2dd4bf" stroke-width="2" fill="none" opacity="0.7" marker-end="url(#m51-ah)"/>
+          <!-- seta ok -->
+          <line x1="630" y1="95" x2="678" y2="95" stroke="#2dd4bf" stroke-width="2" fill="none" opacity="0.7" marker-end="url(#m51-ah)"/>
+          <text x="654" y="88" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-size="10" font-weight="600">ok</text>
+          <!-- seta retorno ciano -->
+          <path d="M562,131 C562,170 390,170 338,131" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5,3" opacity="0.85" marker-end="url(#m51-ahc)"/>
+          <text x="450" y="186" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="10" font-weight="600">não ok → revisa</text>
+          <!-- caixas -->
+          <rect x="20" y="71" width="98" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="69" y="93" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">Ideia/tema</text>
+          <text x="69" y="109" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">entrada</text>
+          <rect x="166" y="71" width="116" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="224" y="93" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">IA estrutura</text>
+          <text x="224" y="109" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">esqueleto do post</text>
+          <rect x="330" y="71" width="116" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="388" y="93" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">IA redige</text>
+          <text x="388" y="109" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">rascunho completo</text>
+          <g filter="url(#m51-glow)"><rect x="494" y="59" width="136" height="72" rx="12" fill="#0c2422" stroke="url(#m51-grad)" stroke-width="2.5"/></g>
+          <text x="562" y="91" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-weight="600" font-size="14">Avaliação</text>
+          <text x="562" y="110" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="11">tom + tamanho + CTA</text>
+          <rect x="678" y="71" width="102" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="729" y="93" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">Publicação</text>
+          <text x="729" y="109" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">resultado final</text>
+          <!-- título -->
+          <text x="450" y="28" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-size="12" font-weight="600" opacity="0.8">Fluxo de produção de conteúdo — 5 caixas + loop de revisão</text>
+        </svg>
+      </div>
+
+      <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-teal-400 mb-4 flex items-center">
+          <span class="mr-2">🧩</span> A diferença que muda tudo
+        </h3>
+        <p class="text-neutral-300 mb-3">Comando isolado: você pede → IA responde → você decide o que fazer. Tudo na sua cabeça, tudo no momento.</p>
+        <p class="text-neutral-300">Fluxo: <strong>o processo decide</strong> o que vem depois. Você define as regras uma vez — o sistema as aplica todas as vezes.</p>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">Para converter um hábito em fluxo, faça a pergunta: <strong>"se eu precisasse ensinar alguém a fazer isso sem me perguntar nada, quais seriam os passos?"</strong> A resposta a essa pergunta é o seu fluxo. Escreva em papel antes de abrir qualquer ferramenta.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 2 -->
+    <section id="topico-2" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold">🤖 O que a IA faz num sistema</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        A IA não é um oráculo que resolve tudo numa pergunta. Num sistema, ela ocupa <strong class="text-teal-400">papéis específicos em etapas específicas</strong>. Entender esses papéis é o que permite distribuir o trabalho de forma inteligente.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+          <h4 class="font-bold text-teal-400 mb-4">✓ O que a IA faz bem num sistema</h4>
+          <ul class="space-y-3 text-neutral-300">
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span><strong>Interpreta:</strong> transforma entrada bruta em algo estruturado</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span><strong>Gera proposta:</strong> produz um primeiro rascunho contra os critérios</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span><strong>Avalia:</strong> confronta a saída com uma rubrica explícita</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span><strong>Compara:</strong> duas versões lado a lado com critérios</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span><strong>Executa partes:</strong> cuida de um trecho do processo enquanto outra etapa é humana</span></li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+          <h4 class="font-bold text-red-400 mb-4">✗ O que NÃO delegar à IA no sistema</h4>
+          <ul class="space-y-3 text-neutral-300">
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span><strong>Decisão final:</strong> publicar, enviar, assinar — sempre humano</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span><strong>Julgamento contextual:</strong> "faz sentido pro cliente X" requer conhecimento que ela não tem</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span><strong>Responsabilidade legal:</strong> nenhum sistema IA assina por você</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span><strong>Definir critérios:</strong> o que é "bom" é escolha sua — não da IA</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+        <p class="text-xs text-neutral-500 mb-2 font-semibold">PAPÉIS DA IA POR CAIXA — EXEMPLO DE SISTEMA DE ANÁLISE</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400">Caixa 1 — Interpretação:</span> <span class="text-neutral-400">"Leia este documento e extraia os 5 pontos principais em bullets."</span><br>
+<span class="text-teal-400">Caixa 2 — Análise:</span> <span class="text-neutral-400">"Com base nos 5 pontos, identifique riscos e oportunidades."</span><br>
+<span class="text-teal-400">Caixa 3 — Proposta:</span> <span class="text-neutral-400">"Sugira 3 ações prioritárias, ordenadas por impacto × esforço."</span><br>
+<span class="text-teal-400">Caixa 4 — Avaliação:</span> <span class="text-neutral-400">"Cada ação atende aos critérios X, Y, Z? Aponte o que não atende."</span><br>
+<span class="text-neutral-500">↳ humano decide: aprova, ajusta ou descarta</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 3 -->
+    <section id="topico-3" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold">✏️ Desenhando o primeiro fluxo</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O exercício mais importante do módulo. Pega um processo que você já faz — produzir um post, escrever um relatório, criar uma aula — e <strong class="text-teal-400">coloca no papel em caixas</strong>. Antes de qualquer ferramenta.
+      </p>
+
+      <div class="space-y-6 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold">1</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Liste as etapas que você já faz</h4>
+            <p class="text-sm text-neutral-400 mb-2">Processo escolhido: produção de post para redes sociais</p>
+            <p class="text-neutral-300 text-sm">Você já faz isso mentalmente: pensar no tema, decidir o ângulo, rascunhar, revisar, ajustar o tamanho, publicar. Escreva cada etapa num post-it (real ou mental).</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold">2</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Marque: humano ou IA?</h4>
+            <p class="text-sm text-neutral-400 mb-2">Para cada etapa, decida quem executa</p>
+            <p class="text-neutral-300 text-sm">Humano: escolher o tema, aprovar o tom, publicar. IA: estruturar o rascunho, redigir, revisar segundo critérios. Marque com uma cor ou símbolo diferente no papel.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold">3</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Conecte as caixas com setas</h4>
+            <p class="text-sm text-neutral-400 mb-2">O fluxo começa a ganhar forma</p>
+            <p class="text-neutral-300 text-sm">Onde a IA recebe algo do humano? Onde entrega de volta? As setas revelam os handoffs — e também onde o processo normalmente trava (etapas sem seta de entrada são gargalos).</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold">4</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-teal-400 mb-2">Adicione a seta de retorno</h4>
+            <p class="text-sm text-neutral-400 mb-2">O loop fecha o sistema</p>
+            <p class="text-neutral-300 text-sm">Da caixa de Avaliação, desenhe uma seta de volta para a caixa anterior quando o resultado não passou. Essa seta ciano é o que transforma uma sequência linear num sistema que melhora.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">Seu primeiro fluxo não precisa ser perfeito. <strong>O rascunho revelará gargalos que você não sabia que existiam</strong> — etapas onde o processo sempre depende de você estar lá. Esses são os pontos que a arquitetura vai resolver.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 4 -->
+    <section id="topico-4" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold">🔀 Pontos de decisão e ramificações</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Nem todo fluxo é uma linha reta. Às vezes o processo se bifurca: <strong class="text-teal-400">se A, então vai para a caixa X; se B, vai para a caixa Y</strong>. Mapear essas bifurcações é converter julgamento implícito em regra explícita.
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-2 font-semibold">EXEMPLOS DE PONTOS DE DECISÃO EM FLUXOS COMUNS</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400">Post avaliado → Tom adequado?</span><br>
+<span class="text-neutral-400">  ✓ sim → segue para publicação</span><br>
+<span class="text-neutral-400">  ✗ não → volta para reescrita com instrução de tom</span><br><br>
+<span class="text-teal-400">Proposta gerada → Cliente é novo ou recorrente?</span><br>
+<span class="text-neutral-400">  → novo: adiciona seção de apresentação</span><br>
+<span class="text-neutral-400">  → recorrente: pula apresentação, vai direto ao escopo</span><br><br>
+<span class="text-teal-400">Análise concluída → Nível de risco?</span><br>
+<span class="text-neutral-400">  → baixo: aprova automaticamente</span><br>
+<span class="text-neutral-400">  → alto: escala para revisão humana</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+          <h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center">
+            <span class="mr-2">📊</span> Por que bifurcações são importantes
+          </h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>• Transformam regras que estavam na sua cabeça em lógica documentada</li>
+            <li>• Permitem que o sistema lide com casos diferentes sem você ter que intervir em cada um</li>
+            <li>• São a base de sistemas que escalam — mais casos, mesma lógica</li>
+          </ul>
+        </div>
+        <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+          <h3 class="text-lg font-semibold text-teal-400 mb-3 flex items-center">
+            <span class="mr-2">🧩</span> Como desenhar
+          </h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>• Use uma forma diferente (losango ou triângulo) para pontos de decisão</li>
+            <li>• Escreva a condição na forma de pergunta: "aprovado?"</li>
+            <li>• Coloque "sim" e "não" (ou os valores relevantes) nas setas que saem</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 5 -->
+    <section id="topico-5" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold">🤝 Onde o humano entra — handoff IA × humano</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Um sistema sem handoffs claros é uma automação que falha silenciosamente ou uma tarefa manual que nunca sai da mesa. <strong class="text-teal-400">O handoff é o ponto onde o bastão passa de mão</strong> — e precisa ser explícito nos dois sentidos.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+          <h4 class="font-bold text-teal-400 mb-4">Humano → IA (você alimenta o sistema)</h4>
+          <ul class="space-y-3 text-neutral-300 text-sm">
+            <li class="flex items-start space-x-2"><span class="text-teal-400">→</span><span>Fornece o tema, briefing ou contexto inicial</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">→</span><span>Define os critérios de qualidade antes de rodar</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">→</span><span>Injeta a base de conhecimento (briefing-base da T3)</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">→</span><span>Decide qual caminho seguir nos pontos de bifurcação alta</span></li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+          <h4 class="font-bold text-neutral-300 mb-4">IA → Humano (o sistema entrega pra você)</h4>
+          <ul class="space-y-3 text-neutral-300 text-sm">
+            <li class="flex items-start space-x-2"><span class="text-neutral-400">←</span><span>Entrega rascunho para aprovação ou ajuste</span></li>
+            <li class="flex items-start space-x-2"><span class="text-neutral-400">←</span><span>Apresenta a análise de risco para decisão humana</span></li>
+            <li class="flex items-start space-x-2"><span class="text-neutral-400">←</span><span>Sinaliza quando o resultado não atingiu os critérios</span></li>
+            <li class="flex items-start space-x-2"><span class="text-neutral-400">←</span><span>Entrega o produto final para publicação/envio (ato sempre humano)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">⚡</span> Regra prática do handoff
+        </h3>
+        <p class="text-neutral-300">Marque cada caixa do seu fluxo com <strong>IA</strong> ou <strong>H</strong> (humano). Se você tiver 3 caixas IA seguidas sem nenhum <strong>H</strong> no meio, verifique: existe algum ponto onde seu julgamento deveria estar? Um sistema sem toque humano não é eficiente — é arriscado.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 6 -->
+    <section id="topico-6" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold">🔁 A lógica do loop: Pensar → Agir → Avaliar → Ajustar → Agir</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O gargalo invisível do caso-âncora existia porque não havia loop. A IA gerava — e parava. <strong class="text-teal-400">Com o loop, o sistema avalia a própria saída e se corrige</strong> até atingir o critério definido por você.
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-3 font-semibold">O LOOP PENSAR → AGIR → AVALIAR → AJUSTAR → AGIR — EM PROMPTS</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400">[PENSAR — você define antes de começar]</span><br>
+<span class="text-neutral-400">Critérios: o post precisa ter gancho na 1ª linha, ≤ 150 palavras e 1 CTA claro.<br></span><br>
+<span class="text-teal-400">[AGIR — IA gera]</span><br>
+<span class="text-neutral-400">"Escreva um post sobre [tema] seguindo os critérios acima."<br></span><br>
+<span class="text-teal-400">[AVALIAR — IA avalia o próprio resultado]</span><br>
+<span class="text-neutral-400">"Agora analise o post que gerou: ele atende aos 3 critérios? Para cada um, responda sim/não e por quê."<br></span><br>
+<span class="text-teal-400">[AJUSTAR → AGIR — se houve "não"]</span><br>
+<span class="text-neutral-400">"Reescreva o post corrigindo os pontos que não atingiram o critério. Não mude o que já estava correto."</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Pensar</h4>
+          <p class="text-xs text-neutral-400">Critérios definidos antes — não depois. Qualidade não é julgamento pós-fato.</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Agir</h4>
+          <p class="text-xs text-neutral-400">IA executa com base nos critérios. Primeiro rascunho raramente é o final.</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Avaliar</h4>
+          <p class="text-xs text-neutral-400">Confronta saída com critério. IA autoavalia melhor quando você deu a rubrica.</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Ajustar</h4>
+          <p class="text-xs text-neutral-400">Corrige só o que falhou — não recomeça do zero. Loop fecha.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 7 -->
+    <section id="topico-7" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">7</span>
+        <h2 class="text-2xl font-bold">🌐 Visão geral de ferramentas — sem intimidação, sem dependência</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Esta trilha é 100% no-code. Mas existe um horizonte além do chat — e conhecê-lo sem se assustar é parte da camada de arquitetura. <strong class="text-teal-400">Você não precisa dessas ferramentas agora. Mas vai querer saber que existem.</strong>
+      </p>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center">
+          <span class="mr-2">📊</span> O espectro de complexidade — onde você está agora é suficiente
+        </h3>
+        <div class="space-y-3">
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 font-bold text-sm min-w-fit">Nível 1 (agora):</span>
+            <span class="text-neutral-300 text-sm">Prompts encadeados num chat. Fluxo executado manualmente. Funciona hoje, sem configuração.</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-blue-400 font-bold text-sm min-w-fit">Nível 2 (depois):</span>
+            <span class="text-neutral-300 text-sm">Ferramentas no-code (n8n, Make, Zapier): o fluxo roda automaticamente. Requer aprendizado de interface.</span>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-neutral-400 font-bold text-sm min-w-fit">Nível 3 (quando fizer sentido):</span>
+            <span class="text-neutral-300 text-sm">Agentes de IA: múltiplas IAs colaborando em papéis diferentes. Complexidade alta, poder alto.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-teal-400 mb-3 flex items-center">
+          <span class="mr-2">🧩</span> Por que começar no Nível 1 é vantagem, não limitação
+        </h3>
+        <p class="text-neutral-300 mb-3">Quem entende o conceito de fluxo, handoff e loop aprende qualquer ferramenta em horas — porque a ferramenta implementa o que ele já pensa.</p>
+        <p class="text-neutral-300">Quem começa pela ferramenta sem entender o conceito fica refém das configurações e perde-se quando a ferramenta muda.</p>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">⚡</span> Atalho do retardatário
+        </h3>
+        <p class="text-neutral-300">Seu sistema mais simples começa agora, no chat, com 3 prompts em sequência. Quando você quiser automatizar, o fluxo já estará documentado — é só mapear para a ferramenta escolhida. <strong>Você não está atrasado. Você está construindo a fundação.</strong></p>
+      </div>
+    </section>
+
+    <!-- RESUMO -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-teal-900/40 via-dark-800 to-dark-800 rounded-xl border border-teal-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center">
+          <span class="mr-3">🔄</span> Resumo do Módulo
+        </h2>
+
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Fluxo vs. comando</strong><span class="text-neutral-400"> — o processo decide o que vem depois; você não precisa lembrar de fazer</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Papéis da IA no sistema</strong><span class="text-neutral-400"> — interpretar, gerar, avaliar, comparar; decisão final sempre humana</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Desenhar em papel primeiro</strong><span class="text-neutral-400"> — revelar gargalos antes de qualquer ferramenta</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Pontos de decisão</strong><span class="text-neutral-400"> — transformar julgamento implícito em regra explícita no fluxo</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Handoffs IA × humano</strong><span class="text-neutral-400"> — cada caixa marcada com quem é responsável</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Loop Pensar → Agir → Avaliar → Ajustar</strong><span class="text-neutral-400"> — critérios definidos antes, avaliação pela IA, ajuste cirúrgico</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Ferramentas como horizonte</strong><span class="text-neutral-400"> — no-code e agentes existem, mas o chat já é suficiente para começar</span></div>
+          </div>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-teal-400 mb-2">📦 Entregável deste módulo:</h3>
+          <p class="text-neutral-300 text-sm">Desenhe o fluxo de 1 processo seu com: mínimo 4 caixas, handoffs IA/humano marcados, pelo menos 1 ponto de decisão e 1 seta de retorno (loop). Pode ser em papel, post-its ou qualquer ferramenta de diagrama simples. Isso é o fluxograma que o módulo 5.2 vai transformar em sistema executável.</p>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-teal-400 mb-2">Próximo Módulo:</h3>
+          <p class="text-neutral-300">5.2 — Montando um mini-sistema: do fluxo no papel ao fluxo executável num chat, com encadeamento de prompts e o sistema mínimo de 3 caixas</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+            ← Trilha 5
+          </a>
+          <a href="modulo-5-2.html" class="flex-1 text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-500 transition-colors">
+            Próximo Módulo →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

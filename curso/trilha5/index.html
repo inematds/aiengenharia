@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilha 5 — Engenharia de Arquitetura | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+
+    @keyframes t5-flow { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .t5-a { animation: t5-flow 2.8s ease-in-out infinite; }
+      .t5-a:nth-child(2){animation-delay:.3s} .t5-a:nth-child(3){animation-delay:.6s}
+      .t5-a:nth-child(4){animation-delay:.9s} .t5-a:nth-child(5){animation-delay:1.2s}
+      .t5-a:nth-child(6){animation-delay:1.5s}
+    }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento (trilha teal) */
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.06); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+    html:not(.dark) .hover\:border-teal-500\/30:hover { border-color: rgba(13, 148, 136, 0.25); }
+
+    /* Light mode - hovers das demais trilhas (nav) */
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    /* Light mode - boxes auxiliares */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    /* Light mode - remove gradientes (fundo uniforme) */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    /* Light mode - cores especiais */
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Light mode - SVG futurista contido */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-teal-400 bg-teal-500/10">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-teal-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-teal-500/20 text-teal-400 text-xs font-semibold rounded-full mb-4">
+        TRILHA 5 · ARQUITETURA DA PIRÂMIDE
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🧩 Engenharia de Arquitetura</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl mb-2">
+        <strong class="text-teal-400">"Arquitetura é o sistema."</strong> A quinta camada da pirâmide: aprenda a conectar prompts, contexto e métodos num fluxo que funciona — mesmo quando você não está olhando.
+      </p>
+      <p class="text-neutral-400 max-w-3xl">
+        <strong class="text-neutral-300">O caso desta trilha — o gargalo invisível:</strong> dez prompts excelentes, biblioteca organizada, e o trabalho ainda trava porque cada etapa depende de você lembrar de fazer. O problema não é nenhum prompt: é que não existe processo conectando as peças. Só arquitetura resolve.
+      </p>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">2</div>
+          <div class="text-xs text-neutral-400">Módulos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">14</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">~1h30</div>
+          <div class="text-xs text-neutral-400">Duração</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">No-code</div>
+          <div class="text-xs text-neutral-400">Abordagem</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- HERO SVG — fluxo com loop ciano de retorno -->
+    <div class="rounded-2xl border border-teal-500/30 bg-dark-900/40 p-3 sm:p-4 mb-12 overflow-hidden">
+      <svg viewBox="0 0 1000 260" class="w-full h-auto" role="img" aria-label="Fluxo de arquitetura: Entrada passa por Interpreta, Gera proposta, Avaliação — se aprovado vai para Entrega, senão seta ciano de retorno volta para Ajusta e reinicia o ciclo">
+        <defs>
+          <linearGradient id="t5h-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#14b8a6"/>
+          </linearGradient>
+          <filter id="t5h-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <pattern id="t5h-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <circle cx="1.3" cy="1.3" r="1.3" fill="#14b8a6" opacity="0.12"/>
+          </pattern>
+          <marker id="t5h-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#2dd4bf"/></marker>
+          <marker id="t5h-ahc" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"/></marker>
+        </defs>
+        <rect x="0" y="0" width="1000" height="260" fill="url(#t5h-grid)"/>
+
+        <!-- setas horizontais principais -->
+        <g fill="none" stroke="#2dd4bf" stroke-width="2" opacity="0.7">
+          <line x1="130" y1="108" x2="188" y2="108" marker-end="url(#t5h-ah)"/>
+          <line x1="306" y1="108" x2="364" y2="108" marker-end="url(#t5h-ah)"/>
+          <line x1="482" y1="108" x2="540" y2="108" marker-end="url(#t5h-ah)"/>
+        </g>
+        <!-- seta principal: avaliação → ok → entrega -->
+        <path d="M676,108 L720,108" fill="none" stroke="#2dd4bf" stroke-width="2" opacity="0.7" marker-end="url(#t5h-ah)"/>
+        <!-- seta ok label -->
+        <text x="698" y="102" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-size="11" font-weight="600">ok</text>
+
+        <!-- seta de retorno ciano: avaliação → não ok → ajusta → volta -->
+        <path d="M618,144 C618,200 480,200 420,200 C360,200 246,200 246,144" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="5,3" opacity="0.8" marker-end="url(#t5h-ahc)"/>
+        <text x="432" y="218" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="11" font-weight="600">não ok → ajusta e repete</text>
+
+        <!-- caixas -->
+        <g class="t5-a"><rect x="22" y="84" width="108" height="48" rx="10" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/><text x="76" y="106" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="13" font-weight="600">Entrada</text><text x="76" y="122" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">sua tarefa</text></g>
+        <g class="t5-a"><rect x="188" y="84" width="118" height="48" rx="10" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/><text x="247" y="106" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="13" font-weight="600">IA Interpreta</text><text x="247" y="122" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">entende contexto</text></g>
+        <g class="t5-a"><rect x="364" y="84" width="118" height="48" rx="10" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/><text x="423" y="106" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="13" font-weight="600">Gera proposta</text><text x="423" y="122" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">primeiro rascunho</text></g>
+        <g filter="url(#t5h-glow)"><rect x="540" y="72" width="136" height="72" rx="12" fill="#0c2422" stroke="url(#t5h-grad)" stroke-width="2.5"/></g>
+        <text x="608" y="103" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-weight="600" font-size="15">Avaliação</text>
+        <text x="608" y="123" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="11">critérios seus</text>
+        <g class="t5-a"><rect x="720" y="84" width="118" height="48" rx="10" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/><text x="779" y="106" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="13" font-weight="600">Entrega</text><text x="779" y="122" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">resultado final</text></g>
+
+        <!-- label do loop -->
+        <text x="500" y="55" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="12" font-weight="600" opacity="0.85">🔁 Loop Pensar → Agir → Avaliar → Ajustar → Agir</text>
+      </svg>
+    </div>
+
+    <!-- MAPA DA TRILHA -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold mb-6">Mapa da trilha</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="#modulo-5-1" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-teal-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-teal-400 font-bold text-sm">5.1</span>
+            <span class="text-xs text-neutral-500">~45 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-teal-400 transition-colors">🔄 Pensar em sistemas</h3>
+          <p class="text-xs text-neutral-400">Comando vira fluxo, fluxo vira resultado</p>
+        </a>
+        <a href="#modulo-5-2" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-teal-500/30 p-5 transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-teal-400 font-bold text-sm">5.2</span>
+            <span class="text-xs text-neutral-500">~45 min</span>
+          </div>
+          <h3 class="font-semibold mb-1 group-hover:text-teal-400 transition-colors">⚙️ Montando um mini-sistema</h3>
+          <p class="text-xs text-neutral-400">3 caixas que já entregam valor</p>
+        </a>
+      </div>
+    </section>
+
+    <h2 class="text-2xl font-bold mb-6">Conteudo detalhado</h2>
+
+    <!-- MODULO 5.1 -->
+    <div id="modulo-5-1" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-teal-400 font-bold">5.1</span>
+          <span class="text-xs text-neutral-500">~45 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">🔄 Pensar em sistemas, não em comandos</h3>
+        <p class="text-neutral-400 text-sm">Do pedido isolado ao fluxo que funciona sem depender da sua memória. Você aprende a enxergar a IA como peça de um processo — não como oráculo avulso — e a desenhar esse processo em papel.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">➡️</span>
+            <div>
+              <span class="font-medium">De comando isolado a fluxo</span>
+              <span class="text-neutral-500 text-sm ml-2">- Entrada → interpretação → ação → avaliação → ajuste → nova ação</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um fluxo é uma sequência de etapas onde a saída de uma se torna a entrada da próxima. Em vez de pedir isoladamente, você mapeia: o que entra, o que a IA faz, o que sai, como avalio, o que ajusto.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Com um fluxo desenhado, qualquer pessoa (ou você mesmo amanhã) consegue executar o processo inteiro sem depender de memória. O trabalho passa a rodar, não a travar.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Fluxo, etapas encadeadas, entrada, saída, dependência de memória eliminada.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">🤖</span>
+            <div>
+              <span class="font-medium">O que a IA faz num sistema</span>
+              <span class="text-neutral-500 text-sm ml-2">- Interpreta, organiza, sugere, revisa, compara, executa partes</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A IA pode ocupar papéis diferentes dentro de um fluxo: num momento interpreta uma entrada bruta; no seguinte gera uma proposta; depois avalia a própria saída contra critérios que você definiu. Cada papel é uma caixa no seu desenho.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Entender os papéis possíveis evita o erro de pedir tudo de uma vez num único prompt gigante. Um sistema bem desenhado distribui as responsabilidades em etapas gerenciáveis.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Papéis da IA, caixa de processo, interpretação, geração, avaliação, execução parcial.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">✏️</span>
+            <div>
+              <span class="font-medium">Desenhar o primeiro fluxo</span>
+              <span class="text-neutral-500 text-sm ml-2">- Produção de conteúdo, passo a passo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O exercício de pegar um processo real (produzir um post, escrever uma análise, montar uma aula) e desenhar as caixas em papel: o que entra, o que cada caixa faz, o que sai de cada uma.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Colocar no papel revela etapas que você fazia mentalmente sem perceber — e gargalos que antes eram invisíveis. O desenho é a primeira versão do sistema.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Fluxo desenhado, caixas de processo, mapa visual, gargalo revelado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🔀</span>
+            <div>
+              <span class="font-medium">Pontos de decisão e ramificações</span>
+              <span class="text-neutral-500 text-sm ml-2">- Quando o fluxo se bifurca</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Nem todo processo é linear. Um ponto de decisão é onde o fluxo pode tomar caminhos diferentes dependendo de um critério: "aprovado → entrega; reprovado → revisa". Esses pontos são desenhados como losangos ou bifurcações.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Mapear as bifurcações transforma a lógica implícita da sua cabeça em regra explícita do sistema — qualquer executor (humano ou IA) sabe o que fazer em cada caso.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Ponto de decisão, condição, ramificação, critério explícito, lógica do sistema.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">🤝</span>
+            <div>
+              <span class="font-medium">Onde o humano entra</span>
+              <span class="text-neutral-500 text-sm ml-2">- Handoff humano × IA no fluxo</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Em todo sistema existe um handoff: o momento em que a IA passa o bastão para o humano (aprovar, ajustar, publicar, decidir) e vice-versa. Marcar explicitamente esses pontos é o que diferencia um fluxo real de uma ilusão de automação.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Saber onde o humano é insubstituível evita dois erros opostos: automatizar o que exige julgamento humano, e fazer manualmente o que a IA faria em segundos.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Handoff, ponto de aprovação humana, responsabilidade, julgamento vs. execução.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">🔁</span>
+            <div>
+              <span class="font-medium">A lógica do loop</span>
+              <span class="text-neutral-500 text-sm ml-2">- Pensar → Agir → Avaliar → Ajustar → Agir</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O ciclo fundamental de qualquer sistema inteligente: você define critérios (Pensar), a IA age (Agir), o resultado é confrontado com os critérios (Avaliar), o que não passou é ajustado (Ajustar), e o ciclo recomeça (Agir).</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Sem o loop, o sistema executa uma vez e para. Com o loop, o sistema melhora sozinho até atingir o critério — o que é a essência do trabalho inteligente.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Loop, ciclo de melhoria, critério de qualidade, iteração sistêmica, seta de retorno.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">🌐</span>
+            <div>
+              <span class="font-medium">Visão geral de ferramentas</span>
+              <span class="text-neutral-500 text-sm ml-2">- No-code e agentes: o suficiente pra não se intimidar</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Uma vista panorâmica (sem obrigação de usar) sobre como sistemas mais complexos podem ser montados: ferramentas no-code como n8n, Make, Zapier, e o conceito de agentes de IA. Nenhuma delas é obrigatória — o curso é 100% executável em qualquer chat.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Conhecer o horizonte sem dependência dele permite que, quando o momento certo chegar, a transição seja natural. Quem entende o conceito aprende a ferramenta 10x mais rápido.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">No-code, agente de IA, automação, visão de longo prazo, progressão natural do sistema.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-5-1')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-5-1.html" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- MODULO 5.2 -->
+    <div id="modulo-5-2" class="bg-dark-800 rounded-xl border border-dark-600 mb-6">
+      <div class="p-6 border-b border-dark-600">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-teal-400 font-bold">5.2</span>
+          <span class="text-xs text-neutral-500">~45 min</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-2">⚙️ Montando um mini-sistema</h3>
+        <p class="text-neutral-400 text-sm">Do fluxo no papel ao fluxo executável num simples chat. Você aprende a encadear prompts (saída de um vira entrada do outro), criar loops de revisão e montar o sistema mínimo de 3 caixas que já entrega valor — para qualquer profissão.</p>
+      </div>
+      <div class="divide-y divide-dark-600">
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+            <span class="text-lg">📄</span>
+            <div>
+              <span class="font-medium">Do fluxo no papel ao fluxo executável</span>
+              <span class="text-neutral-500 text-sm ml-2">- Num simples chat, sem ferramenta extra</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Cada caixa do seu fluxo desenhado vira um prompt separado numa conversa de IA. A sequência de mensagens na mesma sessão executa o sistema — sem instalar nada, sem configurar nada.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">A barreira de entrada é zero. Qualquer pessoa com acesso a um chat de IA pode operar o sistema no mesmo dia em que aprende o conceito.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Fluxo executável, chat como sistema, prompts sequenciais, zero configuração.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+            <span class="text-lg">🔗</span>
+            <div>
+              <span class="font-medium">Encadear prompts</span>
+              <span class="text-neutral-500 text-sm ml-2">- Saída de um vira entrada do outro: exemplo de 4 etapas</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">A técnica de pegar o resultado de um prompt e usá-lo como matéria-prima do próximo. Exemplo completo de 4 etapas: (1) briefing → (2) estrutura → (3) texto → (4) revisão. Cada saída alimenta a entrada seguinte.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">É a peça central da arquitetura no-code. Dominar o encadeamento é dominar 80% do que sistemas sofisticados fazem — só que dentro de um chat, agora, sem dependência de ferramenta.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Encadeamento, saída → entrada, pipeline de prompts, 4 etapas completas.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+            <span class="text-lg">🗃️</span>
+            <div>
+              <span class="font-medium">Bases de conhecimento como peça</span>
+              <span class="text-neutral-500 text-sm ml-2">- Briefings e contextos alimentam o sistema</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O briefing-base da T3, os playbooks da T4 e as bibliotecas de prompts da T1 são peças que alimentam o sistema. Em vez de reexplicar o contexto a cada sessão, você o injeta como primeira entrada do fluxo.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">As camadas anteriores da pirâmide (T1 a T4) se tornam ativas dentro do sistema. É aqui que tudo se conecta — arquitetura usa prompts, contexto e métodos como peças.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Base de conhecimento, injeção de contexto, reuso de ativos, pirâmide conectada.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">4</span>
+            <span class="text-lg">🔄</span>
+            <div>
+              <span class="font-medium">Loop de revisão</span>
+              <span class="text-neutral-500 text-sm ml-2">- A IA avalia o próprio resultado com critérios seus</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Um prompt de avaliação que pega o resultado gerado e o confronta com uma rubrica que você escreveu: "Analise este texto segundo os critérios X, Y, Z. Aponte o que não atingiu o padrão e por quê." O loop fecha quando todos os critérios são atendidos.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Transforma o sistema de passivo (executa uma vez) para ativo (avalia e melhora). É o diferencial que separa um fluxo de trabalho inteligente de uma sequência de cópias e colas.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Loop de revisão, autoavaliação dirigida, rubrica de qualidade, sistema ativo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">5</span>
+            <span class="text-lg">✅</span>
+            <div>
+              <span class="font-medium">Critérios de qualidade dentro do fluxo</span>
+              <span class="text-neutral-500 text-sm ml-2">- Definir o "bom" antes de começar</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">Antes de o sistema rodar, você escreve explicitamente o que "bom" significa para aquele resultado: tamanho, tom, elementos obrigatórios, o que não pode aparecer. Esses critérios alimentam tanto o prompt de geração quanto o de avaliação.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Sem critério explícito, a avaliação é arbitrária ("não gostei") e o sistema fica travado em loop infinito. Com critério claro, o sistema converge — e você consegue delegar sem perder o padrão.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Critério explícito, rubrica, padrão de qualidade, convergência do sistema.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">6</span>
+            <span class="text-lg">⚡</span>
+            <div>
+              <span class="font-medium">Atalho do retardatário</span>
+              <span class="text-neutral-500 text-sm ml-2">- O sistema mínimo de 3 caixas que já entrega valor</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O sistema mais simples que funciona: [Entrada + contexto] → [IA gera proposta] → [IA avalia contra critérios → entrega ou ajusta]. Três caixas. Executável hoje mesmo no chat.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Sistemas perfeitos nunca saem do papel. O sistema mínimo começa a funcionar agora e evolui com o uso — exatamente o que a T6 (Evolução) vai sistematizar.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Sistema mínimo viável, 3 caixas, MVP de processo, começa agora, evolui depois.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="topic-item">
+          <button onclick="toggleTopic(this)" class="w-full px-6 py-4 flex items-center space-x-3 hover:bg-dark-700/50 transition-colors text-left">
+            <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 text-sm font-bold flex items-center justify-center flex-shrink-0">7</span>
+            <span class="text-lg">👥</span>
+            <div>
+              <span class="font-medium">Na sua profissão</span>
+              <span class="text-neutral-500 text-sm ml-2">- 5 perfis com fluxo próprio</span>
+            </div>
+          </button>
+          <div class="topic-explanation px-6 pb-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 space-y-3 ml-9">
+              <div>
+                <span class="text-teal-400 font-semibold">O que e:</span>
+                <p class="text-neutral-300 text-sm">O mini-sistema aplicado a 5 perfis: professor (fluxo ideia → aula pronta), advogado (fluxo análise de contrato), vendedor (fluxo lead → proposta), gestor (fluxo de decisão semanal), criador (fluxo ideia → post publicado). Cada fluxo em 3 caixas.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Por que aprender:</span>
+                <p class="text-neutral-300 text-sm">Ver o sistema no seu contexto específico transforma conceito em ação. O aluno sai com um esboço do próprio fluxo — não de um genérico.</p>
+              </div>
+              <div>
+                <span class="text-teal-400 font-semibold">Conceitos-chave:</span>
+                <p class="text-neutral-300 text-sm">Aplicação setorial, fluxo por profissão, contexto concreto, esboço do seu sistema.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 bg-dark-700/30 flex justify-start space-x-3">
+        <button onclick="openModal('modal-5-2')" class="px-4 py-2 text-sm bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors">
+          Ver em Modal
+        </button>
+        <a href="modulo-5-2.html" class="px-4 py-2 text-sm bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-colors">
+          Ver Completo
+        </a>
+      </div>
+    </div>
+
+    <!-- NAVEGACAO RODAPE -->
+    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+      <a href="../../index.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+        ← Voltar ao Início
+      </a>
+      <a href="../trilha6/index.html" class="flex-1 text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-500 transition-colors">
+        Próxima Trilha: Evolução →
+      </a>
+    </div>
+
+  </main>
+
+  <!-- MODAIS -->
+  <div id="modal-5-1" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <span class="text-teal-400 font-bold">5.1</span>
+          <span class="font-semibold">Pensar em sistemas, não em comandos</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-5-1.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+
+  <div id="modal-5-2" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80" onclick="if(event.target === this) closeModal()">
+    <div class="bg-dark-800 rounded-xl w-full max-w-6xl h-[95vh] flex flex-col border border-dark-600">
+      <div class="p-4 border-b border-dark-600 flex justify-between items-center flex-shrink-0">
+        <div class="flex items-center space-x-3">
+          <span class="text-teal-400 font-bold">5.2</span>
+          <span class="font-semibold">Montando um mini-sistema</span>
+        </div>
+        <button onclick="closeModal()" class="text-neutral-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <iframe src="modulo-5-2.html" class="flex-1 w-full rounded-b-xl"></iframe>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTopic(button) {
+      const topicItem = button.closest('.topic-item');
+      const explanation = topicItem.querySelector('.topic-explanation');
+      const moduleCard = button.closest('.bg-dark-800');
+      moduleCard.querySelectorAll('.topic-explanation.active').forEach(exp => {
+        if (exp !== explanation) exp.classList.remove('active');
+      });
+      explanation.classList.toggle('active');
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+    }
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(modal => modal.classList.add('hidden'));
+      document.body.style.overflow = 'auto';
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

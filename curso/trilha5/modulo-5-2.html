@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 5.2 — Montando um mini-sistema | Pirâmide da IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:bg-teal-500\/30:hover { background-color: rgba(13, 148, 136, 0.18); }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.06); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-teal-400 bg-teal-500/10">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex items-center space-x-2 text-sm text-neutral-400">
+      <a href="../../index.html" class="hover:text-teal-400">Inicio</a>
+      <span>/</span>
+      <a href="index.html" class="hover:text-teal-400">Trilha 5</a>
+      <span>/</span>
+      <span class="text-teal-400">Modulo 5.2</span>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-teal-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-teal-500/20 text-teal-400 text-xs font-semibold rounded-full mb-4">
+        MODULO 5.2
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">⚙️ Montando um mini-sistema</h1>
+      <p class="text-lg text-neutral-400 max-w-3xl">
+        Do fluxo desenhado em papel ao fluxo executável num chat. Você aprende a encadear prompts (saída de um vira entrada do outro), criar loops de revisão e montar o sistema mínimo de 3 caixas — executável hoje, para qualquer profissão.
+      </p>
+      <div class="grid grid-cols-4 gap-4 mt-8 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">7</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">45</div>
+          <div class="text-xs text-neutral-400">Minutos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">Médio</div>
+          <div class="text-xs text-neutral-400">Nível</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-teal-400">Prática</div>
+          <div class="text-xs text-neutral-400">Tipo</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- TOPICO 1 -->
+    <section id="topico-1" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold">📄 Do fluxo no papel ao fluxo executável</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O fluxo que você desenhou no módulo 5.1 já é um sistema. Agora vamos <strong class="text-teal-400">traduzir cada caixa em um prompt e executar a sequência numa sessão de chat</strong>. Sem instalar nada. Sem configurar nada.
+      </p>
+
+      <!-- SVG pipeline de prompts encadeados -->
+      <div class="rounded-2xl border border-teal-500/30 bg-dark-900/40 p-3 sm:p-4 mb-6 overflow-hidden">
+        <svg viewBox="0 0 900 180" class="w-full h-auto" role="img" aria-label="Pipeline de 4 prompts encadeados: Prompt 1 gera Saída 1, que vira entrada do Prompt 2, gerando Saída 2, e assim até Prompt 4 que entrega o resultado final">
+          <defs>
+            <linearGradient id="m52-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#14b8a6"/>
+            </linearGradient>
+            <filter id="m52-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="m52-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1.3" cy="1.3" r="1.3" fill="#14b8a6" opacity="0.12"/>
+            </pattern>
+            <marker id="m52-ah" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#2dd4bf"/></marker>
+            <marker id="m52-ahc" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 L2.4,4.5 Z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="900" height="180" fill="url(#m52-grid)"/>
+          <!-- setas encadeamento -->
+          <line x1="140" y1="78" x2="192" y2="78" stroke="#38bdf8" stroke-width="2" fill="none" opacity="0.8" marker-end="url(#m52-ahc)"/>
+          <line x1="332" y1="78" x2="384" y2="78" stroke="#38bdf8" stroke-width="2" fill="none" opacity="0.8" marker-end="url(#m52-ahc)"/>
+          <line x1="524" y1="78" x2="576" y2="78" stroke="#38bdf8" stroke-width="2" fill="none" opacity="0.8" marker-end="url(#m52-ahc)"/>
+          <!-- labels saída→entrada -->
+          <text x="166" y="68" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="9" font-weight="600">saída→entrada</text>
+          <text x="358" y="68" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="9" font-weight="600">saída→entrada</text>
+          <text x="550" y="68" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="9" font-weight="600">saída→entrada</text>
+          <!-- prompt boxes -->
+          <rect x="20" y="54" width="120" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="80" y="76" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">Prompt 1</text>
+          <text x="80" y="93" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">Briefing</text>
+          <rect x="192" y="54" width="140" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="262" y="76" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">Prompt 2</text>
+          <text x="262" y="93" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">Estrutura</text>
+          <rect x="384" y="54" width="140" height="48" rx="9" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+          <text x="454" y="76" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" font-weight="600">Prompt 3</text>
+          <text x="454" y="93" text-anchor="middle" fill="#5cb8ae" font-family="Inter,sans-serif" font-size="10">Rascunho</text>
+          <g filter="url(#m52-glow)"><rect x="576" y="42" width="160" height="72" rx="12" fill="#0c2422" stroke="url(#m52-grad)" stroke-width="2.5"/></g>
+          <text x="656" y="75" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-weight="600" font-size="14">Prompt 4</text>
+          <text x="656" y="95" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="11">Revisão + entrega</text>
+          <!-- titulo -->
+          <text x="450" y="24" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-size="12" font-weight="600" opacity="0.8">Pipeline de 4 prompts — cada saída vira entrada do próximo (seta ciano)</text>
+          <!-- nota final -->
+          <text x="656" y="135" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-size="10">resultado final</text>
+        </svg>
+      </div>
+
+      <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-teal-400 mb-3 flex items-center">
+          <span class="mr-2">🧩</span> Como funciona na prática
+        </h3>
+        <p class="text-neutral-300 mb-3">Na mesma sessão de chat: você envia o Prompt 1, recebe a saída, e usa essa saída como parte do Prompt 2 ("Com base no que você acabou de gerar, agora..."). A IA mantém o contexto da conversa — isso é o encadeamento.</p>
+        <p class="text-neutral-300">Cada caixa do fluxo virou uma mensagem no chat. A sequência de mensagens é o sistema.</p>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">Para preservar o contexto entre caixas, comece cada prompt subsequente com: <strong>"Com base na [estrutura/análise/rascunho] anterior..."</strong> Isso ativa a janela de contexto da IA e garante que a saída do passo 1 seja a fundação do passo 2.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 2 -->
+    <section id="topico-2" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold">🔗 Encadeamento de prompts — exemplo completo de 4 etapas</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        A técnica mais importante do módulo. Cada etapa <strong class="text-teal-400">herda o trabalho da anterior e o transforma</strong>. Veja um exemplo completo de produção de artigo em 4 etapas encadeadas.
+      </p>
+
+      <div class="space-y-4 mb-6">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold text-sm">E1</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Etapa 1 — Briefing e estrutura</h4>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300 mb-3">Vou produzir um artigo sobre [TEMA] para [PÚBLICO]. Tom: [TOM]. Extensão: [X] palavras. Primeiro, gere um esboço com 5 seções e o objetivo de cada uma. Não escreva o artigo ainda.</div>
+            <p class="text-neutral-300 text-sm"><strong class="text-teal-400">Saída:</strong> esboço com títulos das seções + 1 frase descrevendo o conteúdo de cada uma. Isso é a entrada da Etapa 2.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold text-sm">E2</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Etapa 2 — Primeiro rascunho</h4>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300 mb-3">Com base no esboço que você gerou, escreva o artigo completo. Siga a estrutura das 5 seções. Tom: [TOM]. Não revise ainda — gere o rascunho completo.</div>
+            <p class="text-neutral-300 text-sm"><strong class="text-teal-400">Saída:</strong> artigo completo em rascunho. A instrução "não revise ainda" é intencional — revisão é a etapa seguinte.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold text-sm">E3</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-dark-600">
+            <h4 class="font-semibold text-white mb-2">Etapa 3 — Avaliação contra critérios</h4>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300 mb-3">Avalie o artigo que você gerou segundo estes 3 critérios: (1) Gancho nos primeiros 2 parágrafos? (2) Cada seção tem pelo menos 1 exemplo concreto? (3) Conclusão com CTA claro? Para cada critério: sim/não + o que precisa mudar.</div>
+            <p class="text-neutral-300 text-sm"><strong class="text-teal-400">Saída:</strong> diagnóstico estruturado. Se tudo "sim" → vai direto para a Etapa 4. Se há "não" → a Etapa 4 corrige apenas o que falhou.</p>
+          </div>
+        </div>
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0 w-12 h-12 rounded-full bg-teal-500/20 flex items-center justify-center">
+            <span class="text-teal-400 font-bold text-sm">E4</span>
+          </div>
+          <div class="flex-1 bg-dark-800 rounded-xl p-6 border border-teal-500/30">
+            <h4 class="font-semibold text-teal-400 mb-2">Etapa 4 — Versão final ajustada</h4>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300 mb-3">Reescreva o artigo corrigindo os pontos que não passaram na avaliação. Mantenha tudo que já estava correto. Entregue a versão final completa.</div>
+            <p class="text-neutral-300 text-sm"><strong class="text-teal-400">Saída:</strong> artigo final, pronto para revisão humana mínima e publicação. Do briefing até aqui: 4 mensagens numa sessão.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Herança</h4>
+          <p class="text-xs text-neutral-400">Cada etapa parte do trabalho da anterior — não do zero</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Separação de papéis</h4>
+          <p class="text-xs text-neutral-400">Geração e revisão em prompts separados = mais qualidade</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Avaliação explícita</h4>
+          <p class="text-xs text-neutral-400">Critérios escritos antes — não julgamento após</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Cirúrgico</h4>
+          <p class="text-xs text-neutral-400">Corrige só o que falhou — preserva o que estava bom</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 3 -->
+    <section id="topico-3" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold">🗃️ Bases de conhecimento como peça do sistema</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O sistema não começa do zero. Os ativos que você construiu nas trilhas anteriores são <strong class="text-teal-400">peças que se encaixam no fluxo</strong>. Injetá-los como primeira entrada é o que diferencia um sistema genérico do seu sistema.
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-3 font-semibold">COMO INJETAR A BASE DE CONHECIMENTO — ESTRUTURA DO PROMPT 0</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400"># Contexto do sistema (injete sempre antes do Prompt 1)</span><br>
+<span class="text-neutral-400">Projeto: [nome do projeto — da T4]</span><br>
+<span class="text-neutral-400">Voz/tom: [do briefing-base T3]</span><br>
+<span class="text-neutral-400">Público: [ICP/perfil — da T3]</span><br>
+<span class="text-neutral-400">Templates aprovados: [da biblioteca T1]</span><br>
+<span class="text-neutral-400">Critérios de qualidade: [da rubrica T4]</span><br>
+<span class="text-neutral-400">Restrições: [da T3]</span><br><br>
+<span class="text-teal-400"># Confirme que entendeu o contexto antes de eu começar o sistema.</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+          <h3 class="text-lg font-semibold text-teal-400 mb-3">Como a pirâmide se conecta aqui</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li><strong class="text-teal-400">T1</strong> — Prompts prontos viram caixas do sistema</li>
+            <li><strong class="text-teal-400">T3</strong> — Briefing-base vira a entrada do sistema</li>
+            <li><strong class="text-teal-400">T4</strong> — Playbooks e rubricas viram critérios de avaliação</li>
+            <li><strong class="text-teal-400">T5 (agora)</strong> — Conecta tudo num fluxo com loop</li>
+            <li><strong class="text-teal-400">T6 (próximo)</strong> — O sistema aprende com cada ciclo</li>
+          </ul>
+        </div>
+        <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6">
+          <h3 class="text-lg font-semibold text-blue-400 mb-3">Por que injetar contexto no início</h3>
+          <ul class="space-y-2 text-neutral-300 text-sm">
+            <li>• Evita reexplicar quem você é e o que precisa a cada sessão</li>
+            <li>• Garante que cada caixa do sistema trabalhe com as mesmas premissas</li>
+            <li>• Transforma a IA de respondedora de perguntas em colaboradora do processo</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 4 -->
+    <section id="topico-4" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold">🔄 Loop de revisão — a IA avalia o próprio resultado</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Um loop de revisão é um prompt que pergunta à IA: <strong class="text-teal-400">"o que você acabou de gerar atende aos critérios X, Y, Z?"</strong> A resposta a essa pergunta direciona o sistema: se sim, entrega; se não, ajusta e repete.
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-3 font-semibold">TEMPLATE DE PROMPT DE AVALIAÇÃO (o "revisor" do sistema)</p>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400">Avalie o [resultado] que você acabou de gerar segundo esta rubrica:</span><br>
+<span class="text-neutral-400">1. [Critério 1]: atende? sim / não → o que faltou</span><br>
+<span class="text-neutral-400">2. [Critério 2]: atende? sim / não → o que faltou</span><br>
+<span class="text-neutral-400">3. [Critério 3]: atende? sim / não → o que faltou</span><br><br>
+<span class="text-teal-400">Se todos os critérios = sim:</span><br>
+<span class="text-neutral-400">Entregue o resultado final com uma linha: "✓ Todos os critérios atendidos."</span><br><br>
+<span class="text-teal-400">Se algum critério = não:</span><br>
+<span class="text-neutral-400">Reescreva apenas o que não passou. Não altere o que já estava correto.</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6">
+          <h4 class="font-bold text-teal-400 mb-4">✓ Quando o loop funciona bem</h4>
+          <ul class="space-y-3 text-neutral-300 text-sm">
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Critérios objetivos e verificáveis ("≤ 150 palavras", "tem CTA")</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Rubrica dada antes de o sistema rodar, não inventada após</span></li>
+            <li class="flex items-start space-x-2"><span class="text-teal-400">✓</span><span>Máximo 3-4 critérios por loop (muitos critérios = paralisia)</span></li>
+          </ul>
+        </div>
+        <div class="bg-red-900/20 rounded-xl border border-red-500/30 p-6">
+          <h4 class="font-bold text-red-400 mb-4">✗ Quando o loop falha</h4>
+          <ul class="space-y-3 text-neutral-300 text-sm">
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Critério vago: "seja criativo" → IA sempre dirá que atendeu</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Critério contraditório: o loop gira indefinidamente</span></li>
+            <li class="flex items-start space-x-2"><span class="text-red-400">✗</span><span>Sem critério de saída: o sistema nunca entrega</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 5 -->
+    <section id="topico-5" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold">✅ Critérios de qualidade dentro do fluxo</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Critério de qualidade não é o que você <em>acha</em> que é bom depois de ver o resultado. É o que você <strong class="text-teal-400">escreve antes de o sistema rodar</strong>. Essa distinção separa sistemas que convergem de sistemas que giram em loop infinito.
+      </p>
+
+      <div class="bg-dark-800 rounded-xl border border-dark-600 p-6 mb-6">
+        <p class="text-xs text-neutral-500 mb-3 font-semibold">EXEMPLOS DE CRITÉRIOS OBJETIVOS VS. VAGOS</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-red-400 font-semibold mb-2">✗ VAGO (sistema não converge)</p>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-400">
+              "Seja profissional"<br>
+              "Tom adequado"<br>
+              "Boa estrutura"<br>
+              "Texto de qualidade"
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-teal-400 font-semibold mb-2">✓ OBJETIVO (sistema converge)</p>
+            <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+              "Tom direto, sem jargão corporativo"<br>
+              "Máx. 150 palavras, 3 parágrafos"<br>
+              "Primeira frase: pergunta ou dado"<br>
+              "Termina com 1 ação concreta"
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center">
+          <span class="mr-2">📊</span> Os 3 tipos de critério que todo sistema precisa
+        </h3>
+        <ul class="space-y-2 text-neutral-300">
+          <li><strong>Critério de formato:</strong> tamanho, estrutura, número de seções, tipo de arquivo</li>
+          <li><strong>Critério de conteúdo:</strong> elementos obrigatórios, o que não pode aparecer, referências necessárias</li>
+          <li><strong>Critério de tom/voz:</strong> nível de formalidade, termos a usar/evitar, público-alvo do texto</li>
+        </ul>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Dica Prática
+        </h3>
+        <p class="text-neutral-300">Pegue um resultado que você aprovou no passado e pergunte: <strong>"por que aprovei isso?"</strong> As respostas são seus critérios. "Aprovei porque era curto, direto, tinha um exemplo e terminava com próximo passo" — isso são 4 critérios objetivos pra rubrica do seu sistema.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 6 -->
+    <section id="topico-6" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold">⚡ Atalho do retardatário — o sistema mínimo de 3 caixas</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Antes de montar o sistema perfeito, monte o sistema mínimo. <strong class="text-teal-400">3 caixas. Executável agora. No chat.</strong> É o MVP (mínimo produto viável) de processo — e ele já entrega valor real.
+      </p>
+
+      <div class="bg-teal-900/20 rounded-xl border border-teal-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-teal-400 mb-4 flex items-center">
+          <span class="mr-2">🧩</span> Esqueleto de fluxo — Kit T5
+        </h3>
+        <div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-neutral-300 leading-relaxed">
+<span class="text-teal-400">[CAIXA 1 — Entrada + contexto]</span><br>
+<span class="text-neutral-400">Injete o briefing-base. Dê o material de entrada. Defina o que quer como saída desta etapa.</span><br><br>
+<span class="text-teal-400">[CAIXA 2 — IA gera proposta]</span><br>
+<span class="text-neutral-400">IA produz o resultado com base na entrada. Ainda não avalia.</span><br><br>
+<span class="text-teal-400">[CAIXA 3 — Avaliação: critérios X + Y + Z]</span><br>
+<span class="text-neutral-400">→ ok: entrega o resultado final</span><br>
+<span class="text-neutral-400">→ não ok: ajusta cirurgicamente → volta à Caixa 2</span>
+        </div>
+      </div>
+
+      <div class="bg-blue-900/20 rounded-xl border border-blue-500/30 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-400 mb-4 flex items-center">
+          <span class="mr-2">📊</span> Por que 3 caixas são suficientes para começar
+        </h3>
+        <ul class="space-y-2 text-neutral-300">
+          <li><strong>Você pode executar hoje.</strong> Não precisa de aprovação, configuração ou investimento.</li>
+          <li><strong>O sistema mínimo revela o que melhorar.</strong> Depois de rodar 3 vezes, você sabe quais caixas precisam de mais detalhe.</li>
+          <li><strong>A T6 (Evolução) se encarrega do resto.</strong> Você não precisa acertar o sistema na primeira versão — só precisa que ele exista.</li>
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Caixa 1 foca em</h4>
+          <p class="text-xs text-neutral-400">Contexto completo. Quanto mais rico, melhor a proposta da Caixa 2.</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Caixa 2 foca em</h4>
+          <p class="text-xs text-neutral-400">Gerar sem avaliar. Separar geração de avaliação melhora os dois.</p>
+        </div>
+        <div class="bg-dark-800 rounded-lg p-4 border border-dark-600">
+          <h4 class="text-teal-400 font-semibold text-sm mb-1">Caixa 3 foca em</h4>
+          <p class="text-xs text-neutral-400">Critérios objetivos. Essa caixa é o "controle de qualidade" do sistema.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 7 -->
+    <section id="topico-7" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-teal-500/20 text-teal-400 font-bold text-xl">7</span>
+        <h2 class="text-2xl font-bold">👥 Na sua profissão — 5 fluxos prontos pra adaptar</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O mini-sistema de 3 caixas funciona em qualquer área. Aqui estão <strong class="text-teal-400">5 fluxos aplicados a 5 perfis</strong> — escolha o mais próximo do seu e adapte.
+      </p>
+
+      <div class="space-y-4 mb-6">
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600">
+          <h4 class="font-semibold text-white mb-3">📚 Professor — fluxo de criação de aula</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+            <span class="text-teal-400">C1:</span> <span class="text-neutral-400">Turma + currículo + objetivo da aula + conteúdo anterior</span><br>
+            <span class="text-teal-400">C2:</span> <span class="text-neutral-400">IA gera plano de aula com objetivos, atividades e avaliação</span><br>
+            <span class="text-teal-400">C3:</span> <span class="text-neutral-400">Avalia: alinhado ao currículo? ≤ 90 min? Tem exercício prático? → ok/ajusta</span>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600">
+          <h4 class="font-semibold text-white mb-3">⚖️ Advogado — fluxo de análise de contrato</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+            <span class="text-teal-400">C1:</span> <span class="text-neutral-400">Contrato anonimizado + contexto da operação + riscos que preocupam</span><br>
+            <span class="text-teal-400">C2:</span> <span class="text-neutral-400">IA aponta cláusulas de risco, lacunas e sugestões de negociação</span><br>
+            <span class="text-teal-400">C3:</span> <span class="text-neutral-400">Avalia: cobriu os 3 riscos prioritários? Linguagem técnica adequada? → ok/aprofunda</span>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600">
+          <h4 class="font-semibold text-white mb-3">💼 Vendedor — fluxo lead → proposta</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+            <span class="text-teal-400">C1:</span> <span class="text-neutral-400">Perfil do lead + histórico de contato + dor declarada + produto/serviço</span><br>
+            <span class="text-teal-400">C2:</span> <span class="text-neutral-400">IA gera proposta personalizada com solução + benefícios + CTA</span><br>
+            <span class="text-teal-400">C3:</span> <span class="text-neutral-400">Avalia: aborda a dor declarada? CTA claro? Tom correto pro perfil? → ok/ajusta</span>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-dark-600">
+          <h4 class="font-semibold text-white mb-3">📊 Gestor — fluxo de decisão semanal</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+            <span class="text-teal-400">C1:</span> <span class="text-neutral-400">KPIs da semana + problemas abertos + metas do trimestre + restrições</span><br>
+            <span class="text-teal-400">C2:</span> <span class="text-neutral-400">IA sugere 3 prioridades para a semana com justificativa</span><br>
+            <span class="text-teal-400">C3:</span> <span class="text-neutral-400">Avalia: alinhadas às metas? Dentro das restrições? Acionáveis? → ok/ajusta</span>
+          </div>
+        </div>
+        <div class="bg-dark-800 rounded-xl p-5 border border-teal-500/30">
+          <h4 class="font-semibold text-teal-400 mb-3">✏️ Criador — fluxo ideia → post publicado</h4>
+          <div class="bg-dark-900 rounded-lg p-3 font-mono text-sm text-neutral-300">
+            <span class="text-teal-400">C1:</span> <span class="text-neutral-400">Tema + público + tom da marca + 3 posts que performaram (referência)</span><br>
+            <span class="text-teal-400">C2:</span> <span class="text-neutral-400">IA gera gancho + desenvolvimento + CTA no formato da rede</span><br>
+            <span class="text-teal-400">C3:</span> <span class="text-neutral-400">Avalia: gancho para no scroll? CTA claro? Tom da marca? ≤ 150 palavras? → ok/ajusta</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">⚡</span> Atalho do retardatário — versão final
+        </h3>
+        <p class="text-neutral-300">Escolha UM dos fluxos acima. Adapte a Caixa 1 com seu contexto real. Execute hoje numa sessão de chat. <strong>O primeiro sistema que funciona vale mais que o sistema perfeito que nunca saiu do papel.</strong> A T6 vai te ensinar a fazê-lo evoluir a cada ciclo.</p>
+      </div>
+    </section>
+
+    <!-- RESUMO -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-teal-900/40 via-dark-800 to-dark-800 rounded-xl border border-teal-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center">
+          <span class="mr-3">⚙️</span> Resumo do Módulo
+        </h2>
+
+        <div class="space-y-4 mb-8">
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Fluxo executável no chat</strong><span class="text-neutral-400"> — cada caixa é um prompt; a sequência de mensagens é o sistema</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Encadeamento de 4 etapas</strong><span class="text-neutral-400"> — briefing → estrutura → rascunho → revisão: saída de cada etapa alimenta a próxima</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Base de conhecimento injetada</strong><span class="text-neutral-400"> — T1 + T3 + T4 se tornam a entrada do sistema, não conhecimento ad hoc</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Loop de revisão com rubrica</strong><span class="text-neutral-400"> — IA avalia o próprio resultado; critérios objetivos fazem o loop convergir</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Critérios de qualidade explícitos</strong><span class="text-neutral-400"> — definidos antes de rodar, objetivos e verificáveis</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">Sistema mínimo de 3 caixas</strong><span class="text-neutral-400"> — Kit T5: Entrada → Gera → Avalia/Entrega. Executável hoje, sem ferramenta extra</span></div>
+          </div>
+          <div class="flex items-start space-x-3">
+            <span class="text-teal-400 mt-1">✓</span>
+            <div><strong class="text-white">5 fluxos por profissão</strong><span class="text-neutral-400"> — professor, advogado, vendedor, gestor, criador: adapte o mais próximo do seu</span></div>
+          </div>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-teal-400 mb-2">📦 Entregável deste módulo:</h3>
+          <p class="text-neutral-300 text-sm">Execute o mini-sistema de 3 caixas com um caso real do início ao fim. Documente: os 3 prompts que usou, os critérios de qualidade que definiu, o que passou e o que precisou de ajuste no loop. Esse documento é o seu <strong>mini-sistema documentado</strong> — o entregável da T5 e a base de entrada da T6.</p>
+        </div>
+
+        <div class="bg-dark-800/50 rounded-lg p-4 mb-8">
+          <h3 class="font-semibold text-teal-400 mb-2">Próxima Trilha:</h3>
+          <p class="text-neutral-300">T6 — Engenharia de Evolução: agora que o sistema existe, como ele aprende com cada ciclo e melhora com o tempo?</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="modulo-5-1.html" class="flex-1 text-center px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+            ← Módulo Anterior
+          </a>
+          <a href="../trilha6/index.html" class="flex-1 text-center px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold hover:bg-teal-500 transition-colors">
+            Próxima Trilha: Evolução →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

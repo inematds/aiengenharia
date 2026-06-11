@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Módulo 4.2 — Biblioteca Viva | Trilha 4</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Dark mode - bordas suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento amber */
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:bg-amber-500\/30:hover { background-color: rgba(217, 119, 6, 0.18); }
+    html:not(.dark) .bg-amber-900\/20 { background-color: rgba(217, 119, 6, 0.06); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+
+    /* Light mode - hovers nav */
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+
+    /* Light mode - boxes auxiliares */
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-900\/20 { background-color: rgba(37, 99, 235, 0.06); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+    html:not(.dark) .text-green-400 { color: #15803d; }
+    html:not(.dark) .bg-green-900\/20 { background-color: rgba(21, 128, 61, 0.06); }
+    html:not(.dark) .border-green-500\/30 { border-color: rgba(21, 128, 61, 0.25); }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-900\/20 { background-color: rgba(13, 148, 136, 0.06); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+
+    /* Light mode - remove gradientes */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    /* Light mode - cores especiais */
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Light mode - SVG */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-amber-400 bg-amber-500/10">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+    <nav class="text-sm text-neutral-500">
+      <a href="../../index.html" class="hover:text-neutral-300">Inicio</a>
+      <span class="mx-2">/</span>
+      <a href="index.html" class="hover:text-neutral-300">Trilha 4</a>
+      <span class="mx-2">/</span>
+      <span class="text-neutral-300">Modulo 4.2</span>
+    </nav>
+  </div>
+
+  <!-- HEADER DO MÓDULO -->
+  <header class="bg-gradient-to-br from-amber-900/30 via-dark-800 to-dark-800 py-10 mt-4 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <span class="inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs font-semibold rounded-full mb-3">
+        MODULO 4.2
+      </span>
+      <h1 class="text-2xl sm:text-3xl font-bold mb-3">📚 Biblioteca Viva</h1>
+      <p class="text-neutral-400 max-w-3xl">
+        Da coleção bagunçada ao sistema curado: organizar, nomear, versionar e aposentar — para que sua biblioteca cresça sem virar arquivo morto. Inclui o atalho do retardatário e como cada profissão usa o método.
+      </p>
+      <div class="grid grid-cols-4 gap-4 mt-6 max-w-2xl">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">7</div>
+          <div class="text-xs text-neutral-400">Tópicos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">50</div>
+          <div class="text-xs text-neutral-400">Minutos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">Médio</div>
+          <div class="text-xs text-neutral-400">Nível</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-amber-400">Sistema</div>
+          <div class="text-xs text-neutral-400">Tipo</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- TOPICO 1 -->
+    <section id="topico-1" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">1</span>
+        <h2 class="text-2xl font-bold">🗂️ Organizar: prompts, briefings, playbooks num lugar só</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        A biblioteca não precisa ser sofisticada para funcionar. Ela precisa ser <strong class="text-amber-400">plana e encontrável</strong>. Hierarquia profunda demais mata a adoção — ninguém lembra em qual subpasta de subpasta guardou a coisa. Três pastas, um índice.
+      </p>
+
+      <!-- SVG Anatomia da biblioteca viva -->
+      <div class="rounded-2xl border border-amber-500/30 bg-dark-900/40 p-4 overflow-hidden mb-6">
+        <svg viewBox="0 0 960 250" class="w-full h-auto" role="img" aria-label="Biblioteca viva: três pastas — prompts, playbooks e briefings — alimentam um índice central curado, que se conecta com curadoria trimestral e compartilhamento">
+          <defs>
+            <linearGradient id="m42-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#38bdf8"/>
+            </linearGradient>
+            <filter id="m42-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="m42-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1" fill="#fbbf24" opacity="0.08"/>
+            </pattern>
+            <marker id="m42-ah" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L7,4 L0,8 L2,4 Z" fill="#fbbf24"/></marker>
+            <marker id="m42-ahc" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L7,4 L0,8 L2,4 Z" fill="#38bdf8"/></marker>
+          </defs>
+          <rect x="0" y="0" width="960" height="250" fill="url(#m42-grid)"/>
+          <!-- /prompts -->
+          <rect x="30" y="55" width="140" height="52" rx="10" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+          <text x="100" y="78" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="12">/prompts</text>
+          <text x="100" y="95" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">inputs testados</text>
+          <!-- /playbooks -->
+          <rect x="30" y="123" width="140" height="52" rx="10" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+          <text x="100" y="146" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="12">/playbooks</text>
+          <text x="100" y="163" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">processos 1 página</text>
+          <!-- /briefings -->
+          <rect x="30" y="191" width="140" height="52" rx="10" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+          <text x="100" y="214" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="12">/briefings</text>
+          <text x="100" y="231" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">contextos reutilizáveis</text>
+          <!-- setas para índice central -->
+          <path d="M170,81 L295,125" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#m42-ah)" opacity="0.6"/>
+          <path d="M170,149 L295,149" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#m42-ah)" opacity="0.6"/>
+          <path d="M170,217 L295,173" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#m42-ah)" opacity="0.6"/>
+          <!-- índice central -->
+          <rect x="295" y="100" width="200" height="100" rx="14" fill="#1f1604" stroke="#f59e0b" stroke-width="2.5" filter="url(#m42-glow)"/>
+          <text x="395" y="135" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="15">Índice Central</text>
+          <text x="395" y="155" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="11">nome · versão · status</text>
+          <text x="395" y="172" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">ativo / aposentado</text>
+          <!-- seta para curadoria -->
+          <path d="M495,150 L570,150" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#m42-ah)" opacity="0.6"/>
+          <!-- curadoria -->
+          <rect x="570" y="105" width="150" height="90" rx="10" fill="#1f1604" stroke="#fbbf24" stroke-width="1.8"/>
+          <text x="645" y="140" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="700" font-size="12">Curadoria</text>
+          <text x="645" y="158" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">trimestral · 15 min</text>
+          <text x="645" y="174" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="10">aposen. / atualiza</text>
+          <!-- seta para compartilhamento -->
+          <path d="M720,150 L795,150" fill="none" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#m42-ahc)" opacity="0.6"/>
+          <!-- compartilhamento -->
+          <rect x="795" y="105" width="145" height="90" rx="10" fill="#0e1b26" stroke="#38bdf8" stroke-width="1.8"/>
+          <text x="867" y="140" text-anchor="middle" fill="#38bdf8" font-family="Inter,sans-serif" font-weight="700" font-size="12">Compartilhar</text>
+          <text x="867" y="158" text-anchor="middle" fill="#bfe6ff" font-family="Inter,sans-serif" font-size="10">equipe · clientes</text>
+          <text x="867" y="174" text-anchor="middle" fill="#bfe6ff" font-family="Inter,sans-serif" font-size="10">ativo de autoridade</text>
+          <!-- /aposentados (abaixo) -->
+          <path d="M395,200 L395,232" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#m42-ah)" opacity="0.4"/>
+          <rect x="295" y="232" width="200" height="44" rx="8" fill="#111827" stroke="#fbbf24" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="395" y="252" text-anchor="middle" fill="#a37b2c" font-family="Inter,sans-serif" font-size="11">/aposentados — histórico preservado</text>
+        </svg>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">📁</div>
+          <h3 class="text-amber-400 font-semibold mb-2">/prompts</h3>
+          <p class="text-neutral-300 text-sm">Inputs testados prontos para reutilizar. Um prompt por arquivo. Nome com situação e versão.</p>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">📋</div>
+          <h3 class="text-amber-400 font-semibold mb-2">/playbooks</h3>
+          <p class="text-neutral-300 text-sm">Processos de 1 página com passos, prompt padrão e métricas. O coração da biblioteca.</p>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">📄</div>
+          <h3 class="text-amber-400 font-semibold mb-2">/briefings</h3>
+          <p class="text-neutral-300 text-sm">Contextos reutilizáveis: quem é o cliente, qual o estilo de voz, quais as restrições do projeto.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 2 -->
+    <section id="topico-2" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">2</span>
+        <h2 class="text-2xl font-bold">🏷️ Nomeação e versão (v1, v2, campeão atual)</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O nome é a interface da sua biblioteca. Se você não consegue encontrar algo em 10 segundos, a convenção de nomeação falhou. A regra é simples: <strong class="text-amber-400">[o-que-faz]-[situação]-v[número]</strong>. Optionally adicione "-campeao" na versão que você usa mais.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-green-400 font-semibold mb-3 flex items-center gap-2">
+            <span>✓ Nomes que funcionam</span>
+          </h3>
+          <ul class="space-y-2 text-sm font-mono text-neutral-300">
+            <li class="text-green-400">post-gancho-linkedin-v3</li>
+            <li class="text-green-400">email-cliente-bravo-v2</li>
+            <li class="text-green-400">playbook-onboarding-freelancer-v1</li>
+            <li class="text-green-400">resumo-reuniao-executiva-v4-campeao</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-red-400 font-semibold mb-3 flex items-center gap-2">
+            <span>✗ Nomes que não funcionam</span>
+          </h3>
+          <ul class="space-y-2 text-sm font-mono text-neutral-300">
+            <li class="text-red-400">prompt bom</li>
+            <li class="text-red-400">template FINAL (2)</li>
+            <li class="text-red-400">cópia de cópia do email</li>
+            <li class="text-red-400">usar este aqui</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-amber-400 mb-3">Regra de ouro do versionamento</h3>
+        <p class="text-neutral-300 text-sm leading-relaxed">Nunca deletar — <strong>aposentar</strong>. A versão antiga é histórico de aprendizado. Mover para /aposentados mantém o índice limpo sem perder a trilha de evolução. Daqui a 6 meses você vai agradecer por ter guardado a v1.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 3 -->
+    <section id="topico-3" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">3</span>
+        <h2 class="text-2xl font-bold">✅ Checklists a partir de processos repetidos</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Checklist não é burocracia — é <strong class="text-amber-400">memória externalizada</strong>. Quando você executa um processo que depende de passos críticos não esquecidos, um checklist economiza erro e retrabalho. Ele nasce da repetição, não da teoria.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-green-400 font-semibold mb-3">✓ Processos que pedem checklist</h3>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex items-start gap-2"><span class="text-green-400 mt-0.5">✓</span> Publicação de conteúdo (revisar, formatar, agendar)</li>
+            <li class="flex items-start gap-2"><span class="text-green-400 mt-0.5">✓</span> Entrega para cliente (revisar, versionar, enviar)</li>
+            <li class="flex items-start gap-2"><span class="text-green-400 mt-0.5">✓</span> Início de projeto (briefing, acesso, pasta)</li>
+            <li class="flex items-start gap-2"><span class="text-green-400 mt-0.5">✓</span> Qualquer processo com passo que já esqueceu antes</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-red-400 font-semibold mb-3">✗ Quando checklist não ajuda</h3>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">✗</span> Processo criativo sem passos fixos</li>
+            <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">✗</span> Tarefa única e irrepetível</li>
+            <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">✗</span> Checklist tão longo que ninguém lê até o fim</li>
+            <li class="flex items-start gap-2"><span class="text-red-400 mt-0.5">✗</span> Passos óbvios que não têm risco de esquecer</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> A regra das 3 execuções
+        </h3>
+        <p class="text-neutral-300 text-sm">Se você executou o mesmo processo 3 vezes de forma similar, é hora de criar o checklist. Antes de 3, você ainda está descobrindo os passos. Depois de 3 sem checklist, está memorizando o que poderia estar documentado.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 4 -->
+    <section id="topico-4" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">4</span>
+        <h2 class="text-2xl font-bold">🧹 Curadoria: aposentar o que parou de funcionar</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Biblioteca que só cresce vira arquivo morto. A curadoria trimestral é o que mantém o sistema <strong class="text-amber-400">vivo e navegável</strong>. São 15 minutos a cada 3 meses — sem cerimônia, sem reunião, sem consultoria.
+      </p>
+
+      <div class="space-y-3 mb-6">
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 font-bold text-sm flex items-center justify-center flex-shrink-0">1</span>
+            <div class="flex-1 w-0.5 bg-dark-600 mt-2"></div>
+          </div>
+          <div class="pb-4 flex-1">
+            <p class="font-semibold">Usei isso no último trimestre?</p>
+            <p class="text-neutral-400 text-sm mt-1">Se a resposta for não: mover para /aposentados. Não deletar — o histórico tem valor para ver de onde você veio e evitar recomeçar do mesmo erro.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 font-bold text-sm flex items-center justify-center flex-shrink-0">2</span>
+            <div class="flex-1 w-0.5 bg-dark-600 mt-2"></div>
+          </div>
+          <div class="pb-4 flex-1">
+            <p class="font-semibold">Ainda funciona do jeito que está escrito?</p>
+            <p class="text-neutral-400 text-sm mt-1">Se o contexto mudou (nova ferramenta, novo cliente, novo formato), atualizar o prompt ou playbook e subir a versão. Nunca editar sem versionar.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 font-bold text-sm flex items-center justify-center flex-shrink-0">3</span>
+            <div class="flex-1 w-0.5 bg-dark-600 mt-2"></div>
+          </div>
+          <div class="pb-4 flex-1">
+            <p class="font-semibold">Tem algo melhor que aprendi desde a última versão?</p>
+            <p class="text-neutral-400 text-sm mt-1">Se sim: criar versão nova com a melhoria, manter a anterior como histórico. O processo evolui sem perder a trilha de aprendizado.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex flex-col items-center">
+            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 font-bold text-sm flex items-center justify-center flex-shrink-0">4</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold">Esse processo deve ser compartilhado?</p>
+            <p class="text-neutral-400 text-sm mt-1">Se funcionou consistentemente e outra pessoa poderia usar: candidato a compartilhamento — com equipe, cliente ou como conteúdo público.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg px-5 py-4">
+        <p class="text-amber-400 font-semibold text-sm mb-1">Quando fazer a curadoria</p>
+        <p class="text-neutral-300 text-sm">Coloque um lembrete recorrente a cada 3 meses. Duração: 15 minutos máximo. Se demorar mais, a biblioteca cresceu rápido demais — sinal de que precisa ser mais seletivo na entrada.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 5 -->
+    <section id="topico-5" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">5</span>
+        <h2 class="text-2xl font-bold">🤝 Compartilhar com equipe/clientes</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Biblioteca compartilhada é <strong class="text-amber-400">ativo de autoridade</strong>. Quando você consegue entregar ao cliente não só o resultado, mas o processo — você para de ser prestador e vira parceiro estratégico. O mesmo vale dentro da equipe.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-amber-400 font-semibold mb-3">Compartilhar com a equipe</h3>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Onboarding de nova pessoa: link para os playbooks relevantes</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Uniformiza padrão sem reunião para alinhar</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Erros individuais viram aprendizado coletivo</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Alguém melhora um processo e todo mundo ganha</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-amber-400 font-semibold mb-3">Compartilhar com clientes</h3>
+          <ul class="space-y-2 text-sm text-neutral-300">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Relatório mensal + o playbook do processo entregue</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Mostra método, não só resultado — diferencial difícil de copiar</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Cliente entende o valor e é mais fácil manter o contrato</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Abre conversa sobre escalar o processo</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-primary/10 rounded-xl border border-primary/30 p-6">
+        <h3 class="text-lg font-semibold text-primary mb-3 flex items-center">
+          <span class="mr-2">💡</span> Biblioteca como conteúdo
+        </h3>
+        <p class="text-neutral-300 text-sm">Se você cria conteúdo público, seus playbooks são material de conteúdo. "Meu processo para X" é um dos formatos que mais gera engajamento — porque entrega método junto com resultado.</p>
+      </div>
+    </section>
+
+    <!-- TOPICO 6 -->
+    <section id="topico-6" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">6</span>
+        <h2 class="text-2xl font-bold">⚡ Atalho do retardatário: os 3 prompts que mais usa</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        Não espere ter 30 itens na biblioteca para começar. O <strong class="text-amber-400">mínimo viável é 3</strong>. Pense nos 3 prompts que você mais usa — aqueles que abre com frequência ou que sempre recria do zero porque não achou onde guardou.
+      </p>
+
+      <div class="bg-dark-800 border border-amber-500/30 rounded-xl overflow-hidden mb-6">
+        <div class="px-4 py-2 bg-amber-900/30 border-b border-amber-500/20 flex items-center gap-2">
+          <span class="text-amber-400 text-xs font-semibold">KIT T4 · FICHA DE APROVEITAMENTO</span>
+          <span class="ml-auto text-neutral-500 text-xs">copie e use hoje</span>
+        </div>
+        <pre class="p-5 text-sm text-neutral-300 overflow-x-auto leading-relaxed font-mono"><code>Data: [____]  Sessão: [tema ou tarefa]
+
+O que tentei: [descreva em 1 linha o que você fez]
+Funcionou?   [sim / não / parcialmente]
+Por quê:     [o que explica o resultado]
+
+Vira template?  [sim → copiar estrutura / não → ajustar]
+Vira regra?     [sim → escrever como "sempre fazer X" / não]
+Onde guardei:   [/prompts / /playbooks / /briefings / nenhum]
+
+---
+Nota do dia (0–10): ___
+O que repetir amanhã: ___</code></pre>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-5">
+          <h3 class="text-amber-400 font-semibold mb-2">Como identificar os 3 primeiros</h3>
+          <ul class="text-sm text-neutral-300 space-y-2">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Qual prompt você recria toda semana do zero?</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Qual tarefa você demora mais porque "tem que lembrar como faz"?</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">→</span> Qual processo você já explicou para alguém mais de uma vez?</li>
+          </ul>
+        </div>
+        <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-5">
+          <h3 class="text-amber-400 font-semibold mb-2">O que fazer com eles</h3>
+          <ul class="text-sm text-neutral-300 space-y-2">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">1.</span> Escreva cada um em 1 parágrafo simples</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">2.</span> Dê nome com convenção [o-que-faz]-v1</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">3.</span> Salve na pasta correta (/prompts ou /playbooks)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICO 7 -->
+    <section id="topico-7" class="mb-16">
+      <div class="flex items-center space-x-4 mb-6">
+        <span class="flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 font-bold text-xl">7</span>
+        <h2 class="text-2xl font-bold">💼 Na sua profissão</h2>
+      </div>
+
+      <p class="text-neutral-300 mb-6 leading-relaxed">
+        O método é universal. A biblioteca é específica. Veja como cada perfil monta a sua — e use como referência para imaginar o que a sua pareceria daqui a 1 ano de uso consistente.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">🎓</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Professor</h3>
+          <ul class="text-sm text-neutral-300 space-y-1">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Banco de planos de aula por turma e nível</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Templates de feedback personalizado por perfil de aluno</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Estruturas de avaliação que funcionaram</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">⚖️</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Advogado</h3>
+          <ul class="text-sm text-neutral-300 space-y-1">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Banco de teses e modelos de peça</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Prompts para resumo de jurisprudência</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Checklist de revisão de contrato</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">💼</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Vendedor</h3>
+          <ul class="text-sm text-neutral-300 space-y-1">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Playbook de objeções com resposta testada</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Templates de follow-up por etapa do funil</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Estrutura de proposta que fecha</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">📊</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Gestor</h3>
+          <ul class="text-sm text-neutral-300 space-y-1">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Decisões registradas com os critérios usados</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Templates de reunião 1:1 e retrospectiva</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Playbook de onboarding da equipe</li>
+          </ul>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+          <div class="text-2xl mb-2">✍️</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Criador</h3>
+          <ul class="text-sm text-neutral-300 space-y-1">
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Estruturas campeãs por formato e plataforma</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Prompts de gancho para LinkedIn, Instagram e YouTube</li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 mt-0.5">✓</span> Banco de ângulos e hooks que performaram</li>
+          </ul>
+        </div>
+        <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-5 flex flex-col justify-center">
+          <div class="text-2xl mb-2">⚡</div>
+          <h3 class="font-semibold text-amber-400 mb-2">Qualquer profissão</h3>
+          <p class="text-sm text-neutral-300">Comece pelos <strong class="text-amber-400">3 prompts que você mais usa</strong>. Documente cada um em 1 parágrafo. É o mínimo viável — e é suficiente para sentir o valor antes de escalar.</p>
+        </div>
+      </div>
+
+      <!-- Índice modelo (box mono) -->
+      <div class="bg-dark-800 border border-amber-500/30 rounded-xl overflow-hidden mb-4">
+        <div class="px-4 py-2 bg-amber-900/30 border-b border-amber-500/20 flex items-center gap-2">
+          <span class="text-amber-400 text-xs font-semibold">ÍNDICE DA BIBLIOTECA · TEMPLATE</span>
+        </div>
+        <pre class="p-5 text-sm text-neutral-300 overflow-x-auto leading-relaxed font-mono"><code># Biblioteca Pessoal de IA — [Seu Nome]
+## Última curadoria: [data]
+
+---
+### /prompts — ativos
+
+| Nome                          | Versão | Status   | Última vez usado |
+|-------------------------------|--------|----------|-----------------|
+| post-gancho-linkedin          | v3     | campeão  | 2026-06-10      |
+| email-cliente-bravo           | v2     | ativo    | 2026-06-08      |
+| resumo-reuniao-executiva      | v4     | campeão  | 2026-06-11      |
+
+---
+### /playbooks — ativos
+
+| Nome                          | Versão | Processo cobre                  |
+|-------------------------------|--------|---------------------------------|
+| playbook-onboarding-freelancer| v1     | primeiros 3 dias com novo cliente |
+| playbook-producao-conteudo    | v2     | criação semanal de posts        |
+
+---
+### /aposentados
+- post-gancho-linkedin-v1 · aposentado em 2026-03-01
+- email-cliente-bravo-v1 · aposentado em 2026-04-15
+
+---
+## Próxima curadoria: [data + 3 meses]</code></pre>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <div class="text-2xl mb-2">🗂️</div>
+          <div class="text-amber-400 font-semibold text-sm mb-1">3 pastas</div>
+          <div class="text-neutral-500 text-xs">prompts · playbooks · briefings</div>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <div class="text-2xl mb-2">🏷️</div>
+          <div class="text-amber-400 font-semibold text-sm mb-1">Convenção</div>
+          <div class="text-neutral-500 text-xs">nome-situação-vN · campeão</div>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <div class="text-2xl mb-2">✂️</div>
+          <div class="text-amber-400 font-semibold text-sm mb-1">Curadoria</div>
+          <div class="text-neutral-500 text-xs">trimestral · 15 min · aposen. não deleta</div>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <div class="text-2xl mb-2">🤝</div>
+          <div class="text-amber-400 font-semibold text-sm mb-1">Ativo de método</div>
+          <div class="text-neutral-500 text-xs">biblioteca compartilhável = autoridade</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESUMO DO MÓDULO -->
+    <section class="mb-12">
+      <div class="bg-gradient-to-br from-amber-900/40 via-dark-800 to-dark-800 rounded-2xl border border-amber-500/30 p-8">
+        <h2 class="text-2xl font-bold mb-6">Resumo do Módulo 4.2</h2>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Estrutura de 3 pastas: plana, navegável, sem hierarquia que ninguém mantém.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Convenção de nomeação: [o-que-faz]-[situação]-v[número]. Simples o suficiente para durar.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Checklists nascem da repetição — regra das 3 execuções iguais.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Curadoria trimestral de 15 min mantém a biblioteca viva, não arquivo morto.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Biblioteca compartilhada é ativo de autoridade — onboarding, diferencial e conteúdo.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Atalho do retardatário: comece com 3. A complexidade vem depois do valor comprovado.</li>
+          <li class="flex items-start gap-3 text-neutral-300"><span class="text-amber-400 mt-0.5 text-lg">✓</span> Cada profissão tem sua biblioteca — o método é o mesmo, o conteúdo é específico.</li>
+        </ul>
+
+        <div class="bg-dark-900/50 border border-amber-500/30 rounded-xl p-6 mb-6">
+          <p class="text-amber-400 font-bold text-base mb-2">📦 Entregável deste módulo:</p>
+          <p class="text-neutral-300">Crie o índice usando o template do tópico 7. Adicione pelo menos 3 itens (pode ser do que você já usa hoje, mesmo que não esteja documentado). Defina a data da próxima curadoria. Esse é o começo da sua biblioteca.</p>
+        </div>
+
+        <div class="bg-dark-800/60 rounded-xl border border-dark-600 p-5">
+          <p class="text-neutral-400 font-semibold mb-2">Próximo Módulo:</p>
+          <p class="text-neutral-300 text-sm mb-4">Você concluiu a Trilha 4. O método está documentado. Agora a Trilha 5 — <strong class="text-teal-400">Arquitetura</strong> — ensina a conectar esses métodos em sistemas: onde processos se encadeiam e a inteligência se multiplica.</p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-start">
+            <a href="modulo-4-1.html" class="inline-block px-5 py-2.5 bg-dark-700 hover:bg-dark-600 rounded-lg font-semibold transition-colors text-sm text-center">
+              ← Módulo 4.1: Da Tentativa ao Padrão
+            </a>
+            <a href="../trilha5/index.html" class="inline-block px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold transition-colors text-sm text-center">
+              Próxima Trilha: Arquitetura →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da IA · <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

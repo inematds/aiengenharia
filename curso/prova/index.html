@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prova da Pirâmide | Pirâmide da IA</title>
+  <meta name="description" content="12 mini-casos, correção instantânea com gabarito comentado e badge compartilhável. Descubra seu nível na Pirâmide da IA.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { primary: '#FACC15', dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' } } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+
+    .opt { transition: all .12s ease; }
+    .opt:disabled { cursor: default; }
+
+    /* Light mode overrides */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5,150,105,0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5,150,105,0.25); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5,150,105,0.08); }
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37,99,235,0.08); }
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124,58,237,0.12); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124,58,237,0.25); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124,58,237,0.08); }
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217,119,6,0.08); }
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13,148,136,0.08); }
+    html:not(.dark) .text-rose-400 { color: #9f1239; }
+    html:not(.dark) .bg-rose-500\/20 { background-color: rgba(225,29,72,0.12); }
+    html:not(.dark) .border-rose-500\/30 { border-color: rgba(225,29,72,0.25); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225,29,72,0.08); }
+
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161,98,7,0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161,98,7,0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185,28,28,0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185,28,28,0.25); }
+    html:not(.dark) .bg-emerald-900\/20 { background-color: rgba(5,150,105,0.06); }
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255,255,255,0.95); }
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="../../index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="../trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="../trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="../trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="../trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="../trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="../trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-br from-rose-900/30 via-dark-800 to-dark-800 py-12 border-b border-dark-600">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-400 text-xs font-semibold rounded-full mb-4">DESAFIO FINAL</span>
+      <h1 class="text-3xl sm:text-4xl font-bold mb-4">🏆 Prova da Pirâmide</h1>
+      <p class="text-lg text-neutral-400 max-w-2xl mx-auto">
+        12 mini-casos reais, 2 por camada. Cada resposta tem <strong class="text-neutral-300">gabarito comentado na hora</strong> — acertar ensina, errar ensina mais. No final, seu badge e a camada por onde recomeçar.
+      </p>
+      <div class="grid grid-cols-3 gap-4 mt-8 max-w-md mx-auto">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-rose-400" id="stat-respondidas">0</div>
+          <div class="text-xs text-neutral-400">Respondidas</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-rose-400" id="stat-acertos">0</div>
+          <div class="text-xs text-neutral-400">Acertos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-rose-400">12</div>
+          <div class="text-xs text-neutral-400">Total</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <div id="quiz" class="space-y-6"></div>
+
+    <!-- RESULTADO -->
+    <div id="resultado" class="hidden mt-10 bg-gradient-to-br from-rose-900/30 via-dark-800 to-dark-800 rounded-xl border border-primary/40 p-6 sm:p-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <p class="text-sm text-neutral-400 mb-1">Seu resultado</p>
+          <h2 id="res-badge" class="text-2xl font-bold mb-1"></h2>
+          <p id="res-score" class="text-neutral-400 mb-4"></p>
+          <p id="res-msg" class="text-neutral-300 mb-6"></p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-start">
+            <a id="res-cta" href="#" class="px-6 py-3 rounded-lg font-bold text-center text-dark-900 bg-primary hover:bg-yellow-300 transition-colors"></a>
+            <button id="res-share" class="px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">📋 Copiar meu badge</button>
+          </div>
+          <p id="res-copied" class="hidden text-emerald-400 text-sm mt-3">✓ Copiado! Cola no story, grupo ou LinkedIn.</p>
+          <button id="res-retry" class="block mt-4 text-sm text-neutral-500 hover:text-neutral-300 underline">Refazer a prova</button>
+        </div>
+        <div>
+          <svg viewBox="0 0 400 300" class="w-full h-auto" role="img" aria-label="Pirâmide de 6 camadas mostrando seu desempenho por camada">
+            <g id="res-pyr">
+              <polygon data-l="6" points="166,52 234,52 212,20 188,20" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+              <polygon data-l="5" points="142,96 258,96 236,60 164,60" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+              <polygon data-l="4" points="118,140 282,140 260,104 140,104" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+              <polygon data-l="3" points="94,184 306,184 284,148 116,148" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+              <polygon data-l="2" points="70,228 330,228 308,192 92,192" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+              <polygon data-l="1" points="46,272 354,272 332,236 68,236" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+            </g>
+            <text x="200" y="296" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="12" font-weight="600">verde = acertou as 2 · amarelo = 1 · vermelho = 0</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Theme Toggle =====
+    const themeToggle = document.getElementById('theme-toggle');
+    const tDark = document.getElementById('theme-toggle-dark-icon');
+    const tLight = document.getElementById('theme-toggle-light-icon');
+    const htmlEl = document.documentElement;
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !htmlEl.classList.contains('dark'))) {
+      tDark.classList.remove('hidden'); htmlEl.classList.remove('dark');
+    } else { tLight.classList.remove('hidden'); }
+    themeToggle.addEventListener('click', () => {
+      tDark.classList.toggle('hidden'); tLight.classList.toggle('hidden');
+      htmlEl.classList.toggle('dark');
+      localStorage.setItem('theme', htmlEl.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // ===== Dados das camadas =====
+    const CAMADAS = {
+      1: { nome: 'Prompt', cor: '#34d399', trilha: '../trilha1/index.html' },
+      2: { nome: 'Intenção', cor: '#60a5fa', trilha: '../trilha2/index.html' },
+      3: { nome: 'Contexto', cor: '#c084fc', trilha: '../trilha3/index.html' },
+      4: { nome: 'Aproveitamento', cor: '#fbbf24', trilha: '../trilha4/index.html' },
+      5: { nome: 'Arquitetura', cor: '#2dd4bf', trilha: '../trilha5/index.html' },
+      6: { nome: 'Evolução', cor: '#fb7185', trilha: '../trilha6/index.html' }
+    };
+
+    // ===== 12 questões (2 por camada) =====
+    const Q = [
+      { camada:1, q:'Maria pediu "fale sobre produtividade" e recebeu um texto vago que serviria pra qualquer pessoa. O que mais melhoraria a resposta?',
+        opts:[
+          {t:'Definir papel, recorte e formato no pedido', ok:true},
+          {t:'Trocar de ferramenta de IA', ok:false},
+          {t:'Repetir o mesmo pedido várias vezes', ok:false},
+          {t:'Pedir um texto mais longo', ok:false}],
+        why:'É a camada Prompt (1). O problema é o pedido genérico — sem papel, recorte ou formato. Trocar de ferramenta (b) não conserta um pedido vago; repetir (c) gera mais do mesmo; mais longo (d) só aumenta o genérico.' },
+      { camada:1, q:'João recebeu uma resposta 80% boa. Qual é o movimento mais eficiente?',
+        opts:[
+          {t:'Apagar tudo e reescrever o prompt do zero', ok:false},
+          {t:'Pedir no turno seguinte "mantém tudo, só ajusta X"', ok:true},
+          {t:'Aceitar como está pra não perder tempo', ok:false},
+          {t:'Abrir uma conversa nova e recomeçar', ok:false}],
+        why:'Camada Prompt (1), tópico iteração. Refinar partindo do que já está bom é mais rápido que recomeçar (a, d). Aceitar 80% (c) desperdiça os 20% fáceis de ganhar com 1 ajuste.' },
+      { camada:2, q:'Um post tecnicamente impecável foi publicado e não gerou nenhuma venda. O briefing pedia "um texto sobre o produto". O que faltou?',
+        opts:[
+          {t:'Mais adjetivos no texto', ok:false},
+          {t:'Declarar a intenção: que decisão o leitor deveria tomar', ok:true},
+          {t:'Um prompt mais longo', ok:false},
+          {t:'Mais exemplos de produtos', ok:false}],
+        why:'Camada Intenção (2). O prompt acertou a TAREFA (falar do produto) e errou o DESTINO (fazer o leitor agir). Sem intenção declarada — "quero que ele agende uma conversa" — a IA otimiza pro alvo errado. Mais texto (a,c,d) não muda o destino.' },
+      { camada:2, q:'Antes de pedir um e-mail à IA, qual pergunta melhor define a intenção?',
+        opts:[
+          {t:'"Quantas palavras o e-mail deve ter?"', ok:false},
+          {t:'"Qual fonte devo usar?"', ok:false},
+          {t:'"Que decisão ou ação eu quero provocar em quem ler?"', ok:true},
+          {t:'"Qual ferramenta é melhor pra e-mail?"', ok:false}],
+        why:'Camada Intenção (2). Intenção é sobre o efeito desejado — a decisão que a resposta deve provocar. Tamanho (a) é formato; fonte (b) e ferramenta (d) não definem propósito.' },
+      { camada:3, q:'"Crie uma campanha pro meu projeto" gerou algo genérico que serviria pra qualquer empresa. A IA não é fraca — qual é o real problema?',
+        opts:[
+          {t:'Falta de contexto: ela não conhece seu público, marca e exemplos', ok:true},
+          {t:'O prompt está curto demais', ok:false},
+          {t:'A intenção não foi declarada', ok:false},
+          {t:'A IA precisa de um modelo mais caro', ok:false}],
+        why:'Camada Contexto (3). A IA está "cega" — sem público, tom de marca, exemplos e limites, ela só pode ser genérica. Prompt curto (b) e intenção (c) são outras camadas; modelo caro (d) não substitui informação que ela não tem.' },
+      { camada:3, q:'Você vai pedir à IA pra analisar um contrato real com nome de cliente e valores. Qual a atitude correta?',
+        opts:[
+          {t:'Colar o contrato inteiro, é mais prático', ok:false},
+          {t:'Anonimizar dados sensíveis ([NOME], [VALOR]) antes de colar', ok:true},
+          {t:'Pedir pra IA prometer não guardar os dados', ok:false},
+          {t:'Não usar IA nunca pra documentos', ok:false}],
+        why:'Camada Contexto (3), tópico privacidade. Anonimizar antes é a regra de ouro ("colaria isso num grupo público?"). Colar cru (a) expõe dados; pedir promessa à IA (c) não é garantia; abandonar a ferramenta (d) é exagero — anonimizada, ela ajuda.' },
+      { camada:4, q:'Um post seu performou 10× a média. Três meses depois ninguém consegue replicar. Qual camada teria evitado isso?',
+        opts:[
+          {t:'Prompt — escrever melhor', ok:false},
+          {t:'Contexto — anexar mais arquivos', ok:false},
+          {t:'Aproveitamento — registrar o que funcionou e virar método', ok:true},
+          {t:'Arquitetura — montar um fluxo', ok:false}],
+        why:'Camada Aproveitamento (4). O acerto existiu mas não foi registrado — virou pó. Prompt (a) e contexto (b) já estavam certos no dia; arquitetura (d) viria depois. O que faltou foi capturar a estrutura campeã como template.' },
+      { camada:4, q:'Qual hábito melhor transforma acertos isolados em método reutilizável?',
+        opts:[
+          {t:'Comemorar e seguir pro próximo projeto', ok:false},
+          {t:'Anotar o que funcionou, por quê, e salvar como template versionado', ok:true},
+          {t:'Guardar tudo na memória', ok:false},
+          {t:'Refazer do zero cada vez pra "treinar"', ok:false}],
+        why:'Camada Aproveitamento (4). Registrar + versionar transforma sorte em sistema. Comemorar (a) e confiar na memória (c) perdem o conhecimento; refazer do zero (d) é justamente o desperdício que a camada combate.' },
+      { camada:5, q:'João tem 30 prompts excelentes salvos, mas toda semana esquece etapas do processo de criar a newsletter. Qual camada resolve?',
+        opts:[
+          {t:'Prompt — escrever prompts melhores', ok:false},
+          {t:'Contexto — anexar mais arquivos', ok:false},
+          {t:'Arquitetura — conectar as etapas num fluxo', ok:true},
+          {t:'Evolução — analisar resultados passados', ok:false}],
+        why:'Camada Arquitetura (5). Os prompts já são bons (não é a) e a IA já entende o assunto (não é b). O problema é que as peças não estão conectadas num processo. Evolução (d) viria depois: só se melhora um processo que existe.' },
+      { camada:5, q:'Num mini-sistema de IA, o que significa "encadear prompts"?',
+        opts:[
+          {t:'Enviar o mesmo prompt várias vezes seguidas', ok:false},
+          {t:'A saída de uma etapa vira a entrada da próxima', ok:true},
+          {t:'Usar prompts muito longos', ok:false},
+          {t:'Salvar prompts numa pasta', ok:false}],
+        why:'Camada Arquitetura (5). Encadear = a resposta da etapa 1 alimenta a etapa 2 (ideia→roteiro→legenda→...). Repetir (a) e prompt longo (c) não são encadeamento; salvar em pasta (d) é biblioteca (camada 4).' },
+      { camada:6, q:'Um vídeo fez 50× a média. O criador comemorou e o canal seguiu igual. Seis meses depois ninguém sabe replicar. O que faltou?',
+        opts:[
+          {t:'Fechar o ciclo: extrair o porquê e alimentar o próximo conteúdo', ok:true},
+          {t:'Publicar com mais frequência', ok:false},
+          {t:'Um prompt melhor', ok:false},
+          {t:'Mais contexto sobre o público', ok:false}],
+        why:'Camada Evolução (6). Sistema rodando ≠ sistema evoluindo. Faltou o ciclo que transforma resultado em aprendizado (as 8 perguntas pós-resultado). Frequência (b), prompt (c) e contexto (d) não capturam o aprendizado do acerto.' },
+      { camada:6, q:'Qual é o sinal de que seu uso de IA realmente EVOLUI (e não só "roda")?',
+        opts:[
+          {t:'Você usa a IA todos os dias', ok:false},
+          {t:'Cada ciclo melhora o próximo: erros viram regras, acertos viram padrões', ok:true},
+          {t:'Você tem muitos prompts salvos', ok:false},
+          {t:'Você usa o modelo mais novo', ok:false}],
+        why:'Camada Evolução (6). Evolução é aprendizado acumulado — o ciclo seguinte começa melhor que o anterior. Frequência (a), volume de prompts (c) e modelo novo (d) são atividade, não evolução.' }
+    ];
+
+    // ===== Render =====
+    const quizEl = document.getElementById('quiz');
+    const respostas = {}; // idx -> bool acertou
+    Q.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'bg-dark-800 rounded-xl border border-dark-600 p-5 sm:p-6';
+      card.id = 'q-' + idx;
+      const cor = CAMADAS[item.camada].cor;
+      const nome = CAMADAS[item.camada].nome;
+      let optsHtml = '';
+      item.opts.forEach((o, oi) => {
+        optsHtml += `<button class="opt w-full text-left px-4 py-3 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300 hover:bg-dark-600 transition-colors mb-2" data-q="${idx}" data-o="${oi}">${o.t}</button>`;
+      });
+      card.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="color:${cor};background:${cor}22">Q${idx+1} · Camada ${item.camada} (${nome})</span>
+        </div>
+        <p class="font-semibold mb-4">${item.q}</p>
+        <div class="opts">${optsHtml}</div>
+        <div class="feedback hidden mt-3 rounded-lg p-4 text-sm"></div>`;
+      quizEl.appendChild(card);
+    });
+
+    let respondidas = 0, acertos = 0;
+    quizEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.opt');
+      if (!btn) return;
+      const qi = +btn.dataset.q, oi = +btn.dataset.o;
+      if (respostas[qi] !== undefined) return; // já respondida
+      const item = Q[qi];
+      const acertou = item.opts[oi].ok;
+      respostas[qi] = acertou;
+      respondidas++; if (acertou) acertos++;
+
+      const card = document.getElementById('q-' + qi);
+      card.querySelectorAll('.opt').forEach((b, bi) => {
+        b.disabled = true;
+        if (item.opts[bi].ok) {
+          b.className = 'opt w-full text-left px-4 py-3 rounded-lg border border-emerald-500/30 bg-emerald-900/20 text-sm text-emerald-400 font-medium mb-2';
+          b.innerHTML = '✓ ' + item.opts[bi].t;
+        } else if (bi === oi) {
+          b.className = 'opt w-full text-left px-4 py-3 rounded-lg border border-red-500/30 bg-red-900/20 text-sm text-red-400 mb-2';
+          b.innerHTML = '✗ ' + item.opts[bi].t;
+        } else {
+          b.className = 'opt w-full text-left px-4 py-3 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-500 mb-2';
+        }
+      });
+      const fb = card.querySelector('.feedback');
+      fb.classList.remove('hidden');
+      fb.className = 'feedback mt-3 rounded-lg p-4 text-sm border ' + (acertou ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-red-900/20 border-red-500/30');
+      fb.innerHTML = `<strong class="${acertou ? 'text-emerald-400' : 'text-red-400'}">${acertou ? 'Certo!' : 'Não foi dessa vez.'}</strong> <span class="text-neutral-300">${item.why}</span>`;
+
+      document.getElementById('stat-respondidas').textContent = respondidas;
+      document.getElementById('stat-acertos').textContent = acertos;
+
+      if (respondidas === Q.length) mostrarResultado();
+    });
+
+    function mostrarResultado() {
+      // acertos por camada
+      const porCamada = {1:0,2:0,3:0,4:0,5:0,6:0};
+      Q.forEach((item, idx) => { if (respostas[idx]) porCamada[item.camada]++; });
+
+      // badge
+      let badge, emoji, cor;
+      if (acertos <= 4)      { badge='Explorador da Base'; emoji='🟢'; cor='#34d399'; }
+      else if (acertos <= 8) { badge='Construtor de Contexto'; emoji='🟣'; cor='#c084fc'; }
+      else if (acertos <= 11){ badge='Arquiteto de Sistemas'; emoji='🟦'; cor='#2dd4bf'; }
+      else                   { badge='Engenheiro de Evolução'; emoji='🌹'; cor='#fb7185'; }
+
+      document.getElementById('res-badge').textContent = emoji + ' ' + badge;
+      document.getElementById('res-badge').style.color = cor;
+      document.getElementById('res-score').textContent = acertos + ' de 12 acertos';
+
+      // camada mais fraca (recomendação) — primeira camada de baixo pra cima com erro
+      let fraca = 0;
+      for (let i = 1; i <= 6; i++) { if (porCamada[i] < 2) { fraca = i; break; } }
+      const msgEl = document.getElementById('res-msg');
+      const cta = document.getElementById('res-cta');
+      if (fraca === 0) {
+        msgEl.innerHTML = 'Gabarito perfeito nas 6 camadas. Você não usa IA — você <strong>opera um sistema de IA</strong>. Hora de blindar isso no capstone da Trilha 6.';
+        cta.href = CAMADAS[6].trilha; cta.textContent = 'Revisar o capstone (T6) →';
+      } else {
+        const c = CAMADAS[fraca];
+        msgEl.innerHTML = `Seu elo mais fraco é a camada <strong style="color:${c.cor}">${fraca} — ${c.nome}</strong>. Lembra da pirâmide: não adianta subir sem firmar a base. Comece por reforçar exatamente essa camada.`;
+        cta.href = c.trilha; cta.textContent = `Reforçar Trilha ${fraca} — ${c.nome} →`;
+      }
+
+      // pinta a mini-pirâmide
+      document.querySelectorAll('#res-pyr polygon').forEach(p => {
+        const l = +p.dataset.l, n = porCamada[l];
+        const c = n === 2 ? '#34d399' : (n === 1 ? '#fbbf24' : '#f87171');
+        p.setAttribute('stroke', c);
+        p.setAttribute('fill', c + '33');
+      });
+
+      window._badgeShare = `${emoji} Tirei "${badge}" (${acertos}/12) na Prova da Pirâmide da IA! Em qual camada você está? 👉 ${location.href.split('#')[0]}`;
+
+      const r = document.getElementById('resultado');
+      r.classList.remove('hidden');
+      r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('res-share').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(window._badgeShare || ''); document.getElementById('res-copied').classList.remove('hidden'); }
+      catch (e) { prompt('Copie seu badge:', window._badgeShare || ''); }
+    });
+    document.getElementById('res-retry').addEventListener('click', () => location.reload());
+  </script>
+
+</body>
+</html>
