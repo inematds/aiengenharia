@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pirâmide da IA | Engenharia de Conhecimento da IA</title>
+  <meta name="description" content="Você não precisa de 100 prompts. Precisa de 6 camadas. Descubra sua camada na Pirâmide da IA e construa um sistema de conhecimento que aprende com você.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FACC15',
+            dark: { 900: '#111827', 800: '#1f2937', 700: '#374151', 600: '#4b5563' }
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .dark body { background-color: #111827; }
+    .topic-explanation { display: none; }
+    .topic-explanation.active { display: block; }
+
+    /* Piramide interativa */
+    .pyr-layer { cursor: pointer; transition: filter .2s ease, opacity .2s ease; }
+    .pyr-layer:hover { filter: brightness(1.35); }
+    .pyr-layer:hover text { opacity: 1; }
+
+    /* Diagnostico */
+    .diag-opt { transition: all .15s ease; }
+    .diag-opt.selected { border-color: #FACC15 !important; background-color: rgba(250, 204, 21, 0.12) !important; color: #FACC15 !important; }
+
+    @keyframes wf-pulse { 0%,100% { opacity:.55 } 50% { opacity:1 } }
+    @media (prefers-reduced-motion: no-preference) {
+      .wf-a { animation: wf-pulse 2.6s ease-in-out infinite; }
+      .wf-a:nth-child(2){animation-delay:.25s} .wf-a:nth-child(3){animation-delay:.5s}
+      .wf-a:nth-child(4){animation-delay:.75s} .wf-a:nth-child(5){animation-delay:1s}
+    }
+
+    /* Light mode overrides - OBRIGATORIO */
+    html:not(.dark) body { background-color: #f8fafc; }
+    html:not(.dark) .bg-dark-900 { background-color: #ffffff; }
+    html:not(.dark) .bg-dark-800 { background-color: #f9fafb; }
+    html:not(.dark) .bg-dark-700 { background-color: #f3f4f6; }
+    html:not(.dark) .bg-dark-600 { background-color: #e5e7eb; }
+    html:not(.dark) .text-neutral-100 { color: #111827; }
+    html:not(.dark) .text-neutral-300 { color: #4b5563; }
+    html:not(.dark) .text-neutral-400 { color: #6b7280; }
+    html:not(.dark) .text-neutral-500 { color: #9ca3af; }
+    html:not(.dark) .border-dark-600 { border-color: #d1d5db; }
+    html:not(.dark) .border-dark-700 { border-color: #e5e7eb; }
+
+    /* Dark mode - bordas e linhas divisorias mais suaves */
+    .dark .border-dark-600 { border-color: #374151; }
+    .dark .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #374151; }
+
+    /* Light mode - cores de acento (TODAS as trilhas - landing) */
+    html:not(.dark) .text-emerald-400 { color: #059669; }
+    html:not(.dark) .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.12); }
+    html:not(.dark) .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .border-emerald-500\/30 { border-color: rgba(5, 150, 105, 0.25); }
+    html:not(.dark) .hover\:text-emerald-400:hover { color: #059669; }
+    html:not(.dark) .hover\:bg-emerald-500\/10:hover { background-color: rgba(5, 150, 105, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-emerald-400 { color: #059669; }
+    html:not(.dark) .hover\:border-emerald-500\/30:hover { border-color: rgba(5, 150, 105, 0.25); }
+
+    html:not(.dark) .text-blue-400 { color: #2563eb; }
+    html:not(.dark) .bg-blue-500\/20 { background-color: rgba(37, 99, 235, 0.12); }
+    html:not(.dark) .bg-blue-500\/10 { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .border-blue-500\/30 { border-color: rgba(37, 99, 235, 0.25); }
+    html:not(.dark) .hover\:text-blue-400:hover { color: #2563eb; }
+    html:not(.dark) .hover\:bg-blue-500\/10:hover { background-color: rgba(37, 99, 235, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-blue-400 { color: #2563eb; }
+    html:not(.dark) .hover\:border-blue-500\/30:hover { border-color: rgba(37, 99, 235, 0.25); }
+
+    html:not(.dark) .text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .bg-purple-500\/20 { background-color: rgba(124, 58, 237, 0.12); }
+    html:not(.dark) .bg-purple-500\/10 { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .border-purple-500\/30 { border-color: rgba(124, 58, 237, 0.25); }
+    html:not(.dark) .hover\:text-purple-400:hover { color: #7c3aed; }
+    html:not(.dark) .hover\:bg-purple-500\/10:hover { background-color: rgba(124, 58, 237, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-purple-400 { color: #7c3aed; }
+    html:not(.dark) .hover\:border-purple-500\/30:hover { border-color: rgba(124, 58, 237, 0.25); }
+
+    html:not(.dark) .text-amber-400 { color: #92400e; }
+    html:not(.dark) .bg-amber-500\/20 { background-color: rgba(217, 119, 6, 0.12); }
+    html:not(.dark) .bg-amber-500\/10 { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .border-amber-500\/30 { border-color: rgba(217, 119, 6, 0.25); }
+    html:not(.dark) .hover\:text-amber-400:hover { color: #92400e; }
+    html:not(.dark) .hover\:bg-amber-500\/10:hover { background-color: rgba(217, 119, 6, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-amber-400 { color: #92400e; }
+    html:not(.dark) .hover\:border-amber-500\/30:hover { border-color: rgba(217, 119, 6, 0.25); }
+
+    html:not(.dark) .text-teal-400 { color: #0d9488; }
+    html:not(.dark) .bg-teal-500\/20 { background-color: rgba(13, 148, 136, 0.12); }
+    html:not(.dark) .bg-teal-500\/10 { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .border-teal-500\/30 { border-color: rgba(13, 148, 136, 0.25); }
+    html:not(.dark) .hover\:text-teal-400:hover { color: #0d9488; }
+    html:not(.dark) .hover\:bg-teal-500\/10:hover { background-color: rgba(13, 148, 136, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-teal-400 { color: #0d9488; }
+    html:not(.dark) .hover\:border-teal-500\/30:hover { border-color: rgba(13, 148, 136, 0.25); }
+
+    html:not(.dark) .text-rose-400 { color: #9f1239; }
+    html:not(.dark) .bg-rose-500\/20 { background-color: rgba(225, 29, 72, 0.12); }
+    html:not(.dark) .bg-rose-500\/10 { background-color: rgba(225, 29, 72, 0.08); }
+    html:not(.dark) .border-rose-500\/30 { border-color: rgba(225, 29, 72, 0.25); }
+    html:not(.dark) .hover\:text-rose-400:hover { color: #9f1239; }
+    html:not(.dark) .hover\:bg-rose-500\/10:hover { background-color: rgba(225, 29, 72, 0.08); }
+    html:not(.dark) .group:hover .group-hover\:text-rose-400 { color: #9f1239; }
+    html:not(.dark) .hover\:border-rose-500\/30:hover { border-color: rgba(225, 29, 72, 0.25); }
+
+    /* Light mode - remove gradientes (fundo uniforme) */
+    html:not(.dark) [class*="bg-gradient-to"] { background-image: none !important; }
+
+    /* Light mode - cores especiais */
+    html:not(.dark) .text-primary { color: #a16207; }
+    html:not(.dark) .bg-primary\/10 { background-color: rgba(161, 98, 7, 0.08); }
+    html:not(.dark) .border-primary\/40 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .border-primary\/30 { border-color: rgba(161, 98, 7, 0.25); }
+    html:not(.dark) .text-sky-400 { color: #0369a1; }
+    html:not(.dark) .text-yellow-400 { color: #a16207; }
+    html:not(.dark) .hover\:text-sky-300:hover { color: #0284c7; }
+    html:not(.dark) .hover\:text-yellow-300:hover { color: #854d0e; }
+    html:not(.dark) .text-red-400 { color: #b91c1c; }
+    html:not(.dark) .bg-red-900\/20 { background-color: rgba(185, 28, 28, 0.06); }
+    html:not(.dark) .border-red-500\/30 { border-color: rgba(185, 28, 28, 0.25); }
+
+    /* Light mode - nav */
+    html:not(.dark) .bg-dark-900\/95 { background-color: rgba(255, 255, 255, 0.95); }
+
+    /* Light mode - SVG futurista contido */
+    html:not(.dark) svg[role="img"] { filter: saturate(0.82) brightness(0.96); }
+  </style>
+</head>
+<body class="bg-dark-900 text-neutral-100 min-h-screen">
+
+  <!-- NAVIGATION -->
+  <nav class="sticky top-0 z-50 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-14">
+        <div class="flex items-center space-x-4">
+          <a href="index.html" class="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300">
+            <span class="text-2xl">🔺</span>
+            <span class="font-bold text-lg hidden sm:inline">Pirâmide da IA</span>
+          </a>
+          <span class="text-neutral-600">|</span>
+          <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 text-sm font-medium">INEMA.CLUB</a>
+        </div>
+        <div class="flex items-center space-x-1 sm:space-x-2">
+          <a href="curso/trilha1/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+            <span class="sm:hidden">T1</span><span class="hidden sm:inline">Prompt</span>
+          </a>
+          <a href="curso/trilha2/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-blue-400 hover:bg-blue-500/10 transition-colors">
+            <span class="sm:hidden">T2</span><span class="hidden sm:inline">Intenção</span>
+          </a>
+          <a href="curso/trilha3/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors">
+            <span class="sm:hidden">T3</span><span class="hidden sm:inline">Contexto</span>
+          </a>
+          <a href="curso/trilha4/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-colors">
+            <span class="sm:hidden">T4</span><span class="hidden sm:inline">Aproveitamento</span>
+          </a>
+          <a href="curso/trilha5/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-teal-400 hover:bg-teal-500/10 transition-colors">
+            <span class="sm:hidden">T5</span><span class="hidden sm:inline">Arquitetura</span>
+          </a>
+          <a href="curso/trilha6/index.html" class="px-3 py-1.5 rounded-lg text-sm font-semibold text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors">
+            <span class="sm:hidden">T6</span><span class="hidden sm:inline">Evolução</span>
+          </a>
+          <button id="theme-toggle" class="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors ml-2">
+            <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 py-16 border-b border-dark-600">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full mb-6 border border-primary/30">
+        ENGENHARIA DE CONHECIMENTO DA IA
+      </span>
+      <h1 class="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
+        Você não precisa de 100 prompts.<br>
+        <span class="text-primary">Precisa de 6 camadas.</span>
+      </h1>
+      <p class="text-lg text-neutral-400 max-w-2xl mx-auto mb-4">
+        Quem entra no topo vê complexidade. <strong class="text-neutral-300">Quem começa na base entende evolução.</strong>
+      </p>
+      <p class="text-neutral-400 max-w-2xl mx-auto mb-8">
+        Suba a Pirâmide da Inteligência Aplicada camada por camada e saia com um
+        <strong class="text-neutral-300">sistema de conhecimento de IA</strong> que melhora a cada ciclo — mesmo (principalmente) se você está começando agora.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+        <a href="#diagnostico" class="px-8 py-3 bg-primary text-dark-900 rounded-lg font-bold hover:bg-yellow-300 transition-colors">
+          Descobrir minha camada (60s) →
+        </a>
+        <a href="#trilhas" class="px-8 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">
+          Ver as 6 trilhas
+        </a>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-primary">6</div>
+          <div class="text-xs text-neutral-400">Trilhas</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-primary">13</div>
+          <div class="text-xs text-neutral-400">Módulos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-primary">6</div>
+          <div class="text-xs text-neutral-400">Artefatos prontos</div>
+        </div>
+        <div class="bg-dark-800/50 rounded-lg p-3 border border-dark-600">
+          <div class="text-xl font-bold text-primary">~12h</div>
+          <div class="text-xs text-neutral-400">Duração</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- PIRAMIDE INTERATIVA -->
+    <section id="piramide" class="mb-20">
+      <h2 class="text-2xl font-bold mb-2 text-center">A Pirâmide da Inteligência Aplicada</h2>
+      <p class="text-neutral-400 text-center mb-8 max-w-2xl mx-auto">
+        Cada camada sustenta a próxima. Clique numa camada para entrar na trilha.
+      </p>
+      <div class="rounded-2xl border border-purple-500/30 bg-dark-900/40 p-3 sm:p-6 overflow-hidden">
+        <svg viewBox="0 0 1000 580" class="w-full h-auto" role="img" aria-label="Pirâmide de 6 camadas: Prompt na base, depois Intenção, Contexto, Aproveitamento, Arquitetura e Evolução no topo. Cada camada leva à trilha correspondente.">
+          <defs>
+            <filter id="pyr-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="pyr-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1.3" cy="1.3" r="1.3" fill="#a855f7" opacity="0.12"/>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="1000" height="580" fill="url(#pyr-grid)"/>
+
+          <!-- Camada 6 - Evolucao (topo) -->
+          <a href="curso/trilha6/index.html">
+            <g class="pyr-layer">
+              <polygon points="404,100 596,100 530,18 470,18" fill="#2a0f16" stroke="#fb7185" stroke-width="2" filter="url(#pyr-glow)"/>
+              <text x="500" y="75" text-anchor="middle" fill="#fb7185" font-family="Inter,sans-serif" font-weight="600" font-size="17">6 · Evolução</text>
+              <title>Evolução é o aprendizado acumulado.</title>
+            </g>
+          </a>
+          <!-- Camada 5 - Arquitetura -->
+          <a href="curso/trilha5/index.html">
+            <g class="pyr-layer">
+              <polygon points="333,188 667,188 601,106 399,106" fill="#0c1f1c" stroke="#2dd4bf" stroke-width="2"/>
+              <text x="500" y="145" text-anchor="middle" fill="#2dd4bf" font-family="Inter,sans-serif" font-weight="600" font-size="18">5 · Arquitetura</text>
+              <text x="500" y="166" text-anchor="middle" fill="#7edcd2" font-family="Inter,sans-serif" font-size="12" opacity="0.8">o sistema</text>
+              <title>Arquitetura é o sistema.</title>
+            </g>
+          </a>
+          <!-- Camada 4 - Aproveitamento -->
+          <a href="curso/trilha4/index.html">
+            <g class="pyr-layer">
+              <polygon points="262,276 738,276 672,194 328,194" fill="#1f1604" stroke="#fbbf24" stroke-width="2"/>
+              <text x="500" y="233" text-anchor="middle" fill="#fbbf24" font-family="Inter,sans-serif" font-weight="600" font-size="18">4 · Aproveitamento</text>
+              <text x="500" y="254" text-anchor="middle" fill="#fcd9a0" font-family="Inter,sans-serif" font-size="12" opacity="0.8">o método</text>
+              <title>Aproveitamento é o método.</title>
+            </g>
+          </a>
+          <!-- Camada 3 - Contexto -->
+          <a href="curso/trilha3/index.html">
+            <g class="pyr-layer">
+              <polygon points="192,364 808,364 742,282 258,282" fill="#1a1230" stroke="#c084fc" stroke-width="2"/>
+              <text x="500" y="321" text-anchor="middle" fill="#c084fc" font-family="Inter,sans-serif" font-weight="600" font-size="18">3 · Contexto</text>
+              <text x="500" y="342" text-anchor="middle" fill="#ddc2ff" font-family="Inter,sans-serif" font-size="12" opacity="0.8">o mapa</text>
+              <title>Contexto é o mapa.</title>
+            </g>
+          </a>
+          <!-- Camada 2 - Intencao -->
+          <a href="curso/trilha2/index.html">
+            <g class="pyr-layer">
+              <polygon points="121,452 879,452 813,370 187,370" fill="#0e1622" stroke="#60a5fa" stroke-width="2"/>
+              <text x="500" y="409" text-anchor="middle" fill="#60a5fa" font-family="Inter,sans-serif" font-weight="600" font-size="18">2 · Intenção</text>
+              <text x="500" y="430" text-anchor="middle" fill="#bcd6ff" font-family="Inter,sans-serif" font-size="12" opacity="0.8">o destino</text>
+              <title>Intenção é o destino.</title>
+            </g>
+          </a>
+          <!-- Camada 1 - Prompt (base) -->
+          <a href="curso/trilha1/index.html">
+            <g class="pyr-layer">
+              <polygon points="50,540 950,540 884,458 116,458" fill="#0e2018" stroke="#34d399" stroke-width="2"/>
+              <text x="500" y="497" text-anchor="middle" fill="#34d399" font-family="Inter,sans-serif" font-weight="600" font-size="18">1 · Prompt</text>
+              <text x="500" y="518" text-anchor="middle" fill="#a7e8cd" font-family="Inter,sans-serif" font-size="12" opacity="0.8">a pergunta — comece aqui</text>
+              <title>Prompt é a pergunta.</title>
+            </g>
+          </a>
+        </svg>
+      </div>
+      <p class="text-center text-sm text-neutral-500 mt-4">
+        Prompt é a pergunta · Intenção é o destino · Contexto é o mapa · Aproveitamento é o método · Arquitetura é o sistema · Evolução é o aprendizado acumulado
+      </p>
+    </section>
+
+    <!-- DIAGNOSTICO -->
+    <section id="diagnostico" class="mb-20">
+      <div class="bg-gradient-to-br from-purple-900/30 via-dark-800 to-dark-800 rounded-xl border border-purple-500/30 p-6 sm:p-8">
+        <h2 class="text-2xl font-bold mb-2">🧭 Em qual camada você está?</h2>
+        <p class="text-neutral-400 mb-8">6 perguntas, 60 segundos. Responda com honestidade — o resultado diz exatamente por onde começar.</p>
+
+        <div id="diag-questions" class="space-y-6">
+          <!-- Q1 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="1">
+            <p class="font-semibold mb-3"><span class="text-emerald-400 font-bold mr-2">1.</span>Quando a IA te dá uma resposta genérica, você sabe reescrever o pedido (papel, formato, exemplo) pra melhorar?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Sim, sempre</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Às vezes</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Ainda não</button>
+            </div>
+          </div>
+          <!-- Q2 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="2">
+            <p class="font-semibold mb-3"><span class="text-blue-400 font-bold mr-2">2.</span>Antes de pedir, você declara o objetivo final — quem vai ler e o que deve acontecer depois da resposta?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Sim, sempre</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Às vezes</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Ainda não</button>
+            </div>
+          </div>
+          <!-- Q3 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="3">
+            <p class="font-semibold mb-3"><span class="text-purple-400 font-bold mr-2">3.</span>Você fornece arquivos, exemplos e regras pra IA entender seu mundo — ou só digita o pedido "seco"?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Forneço sempre</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Às vezes</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Pedido seco</button>
+            </div>
+          </div>
+          <!-- Q4 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="4">
+            <p class="font-semibold mb-3"><span class="text-amber-400 font-bold mr-2">4.</span>Quando um prompt funciona muito bem, você salva, dá nome e reusa — ou ele se perde na conversa?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Salvo e reuso</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Às vezes</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Se perde</button>
+            </div>
+          </div>
+          <!-- Q5 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="5">
+            <p class="font-semibold mb-3"><span class="text-teal-400 font-bold mr-2">5.</span>Você tem algum processo em etapas onde a IA participa — a saída de uma etapa vira entrada da próxima?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Sim, tenho</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Algo improvisado</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Ainda não</button>
+            </div>
+          </div>
+          <!-- Q6 -->
+          <div class="diag-q bg-dark-800 rounded-xl border border-dark-600 p-5" data-layer="6">
+            <p class="font-semibold mb-3"><span class="text-rose-400 font-bold mr-2">6.</span>Depois de um bom (ou mau) resultado, você registra o porquê e ajusta seu método pro próximo ciclo?</p>
+            <div class="flex flex-wrap gap-2">
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="1">Sim, registro</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0.5">Às vezes</button>
+              <button class="diag-opt px-4 py-2 rounded-lg border border-dark-600 bg-dark-700 text-sm text-neutral-300" data-v="0">Só sigo em frente</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex justify-start">
+          <button id="diag-submit" class="px-8 py-3 bg-primary text-dark-900 rounded-lg font-bold hover:bg-yellow-300 transition-colors opacity-50 cursor-not-allowed" disabled>
+            Ver meu resultado
+          </button>
+        </div>
+
+        <!-- RESULTADO -->
+        <div id="diag-result" class="hidden mt-8 bg-dark-800 rounded-xl border border-primary/40 p-6 sm:p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <p class="text-sm text-neutral-400 mb-1">Seu resultado</p>
+              <h3 id="diag-title" class="text-2xl font-bold mb-2"></h3>
+              <p id="diag-desc" class="text-neutral-300 mb-4"></p>
+              <div id="diag-chips" class="flex flex-wrap gap-2 mb-6"></div>
+              <div class="flex flex-col sm:flex-row gap-3 justify-start">
+                <a id="diag-cta" href="#" class="px-6 py-3 rounded-lg font-bold text-center text-dark-900 bg-primary hover:bg-yellow-300 transition-colors">Começar pela minha trilha →</a>
+                <button id="diag-share" class="px-6 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">📋 Copiar meu resultado</button>
+              </div>
+              <p id="diag-copied" class="hidden text-emerald-400 text-sm mt-3">✓ Copiado! Cola no seu story, grupo ou LinkedIn.</p>
+            </div>
+            <div>
+              <svg viewBox="0 0 400 300" class="w-full h-auto" role="img" aria-label="Mini pirâmide mostrando até qual camada você domina">
+                <g id="diag-pyr">
+                  <polygon data-l="6" points="166,52 234,52 212,20 188,20" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                  <polygon data-l="5" points="142,96 258,96 236,60 164,60" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                  <polygon data-l="4" points="118,140 282,140 260,104 140,104" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                  <polygon data-l="3" points="94,184 306,184 284,148 116,148" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                  <polygon data-l="2" points="70,228 330,228 308,192 92,192" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                  <polygon data-l="1" points="46,272 354,272 332,236 68,236" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                </g>
+                <text id="diag-pyr-label" x="200" y="296" text-anchor="middle" fill="#9ca3af" font-family="Inter,sans-serif" font-size="13" font-weight="600"></text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOCE ESTA ATRASADO? OTIMO. -->
+    <section id="atrasado" class="mb-20">
+      <div class="bg-gradient-to-br from-emerald-900/30 via-dark-800 to-dark-800 rounded-xl border border-emerald-500/30 p-6 sm:p-8">
+        <h2 class="text-2xl font-bold mb-4">⏰ Você está atrasado na IA? <span class="text-emerald-400">Ótimo.</span></h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <p class="text-neutral-300 mb-4 leading-relaxed">
+              Quem entrou cedo, na maioria dos casos, entrou pelo <strong class="text-red-400">topo</strong>: agentes, automações, ferramentas — sem nunca ter construído a base. Resultado? Coleciona prompts, copia tutoriais e trava quando o cenário muda.
+            </p>
+            <p class="text-neutral-300 leading-relaxed">
+              Você, que está começando agora, tem uma vantagem que ninguém te contou: <strong class="text-emerald-400">pode começar pelo lugar certo</strong>. Uma criança não aprende gramática antes de escutar, tentar e errar. A pirâmide é exatamente esse caminho natural.
+            </p>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-start space-x-3 bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+              <span class="text-emerald-400 mt-0.5">✓</span>
+              <p class="text-sm text-neutral-300"><strong class="text-neutral-100">Quem entende prompt</strong> aprende a pedir.</p>
+            </div>
+            <div class="flex items-start space-x-3 bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+              <span class="text-emerald-400 mt-0.5">✓</span>
+              <p class="text-sm text-neutral-300"><strong class="text-neutral-100">Quem entende contexto</strong> aprende a alimentar a IA.</p>
+            </div>
+            <div class="flex items-start space-x-3 bg-dark-800/60 rounded-lg p-4 border border-dark-600">
+              <span class="text-emerald-400 mt-0.5">✓</span>
+              <p class="text-sm text-neutral-300"><strong class="text-neutral-100">Quem entende a pirâmide inteira</strong> aprende a construir inteligência — e em 6 meses ultrapassa quem só coleciona prompts.</p>
+            </div>
+            <div class="bg-primary/10 rounded-lg p-4 border border-primary/30">
+              <p class="text-sm text-neutral-300"><span class="text-primary font-semibold">💡 Mantra do curso:</span> você não está atrasado. Você está começando pela base — que é exatamente onde se deve começar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRILHAS -->
+    <section id="trilhas" class="mb-20">
+      <h2 class="text-2xl font-bold mb-2">As 6 trilhas</h2>
+      <p class="text-neutral-400 mb-8">Cada trilha abre com um caso real onde só aquela camada resolve — e termina com um artefato pronto pra usar.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <a href="curso/trilha1/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-emerald-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">TRILHA 1</span>
+            <span class="text-xs text-neutral-500">3 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-emerald-400 transition-colors">✍️ Prompt</h3>
+          <p class="text-emerald-400 text-sm font-semibold mb-3">"Prompt é a pergunta."</p>
+          <p class="text-sm text-neutral-400 mb-3">O e-mail difícil: o mesmo pedido em 4 versões — e 4 resultados completamente diferentes.</p>
+          <p class="text-xs text-neutral-500">Inclui Base Zero (nunca usei IA) + verificação anti-alucinação.</p>
+        </a>
+
+        <a href="curso/trilha2/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-blue-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-blue-500/20 text-blue-400 text-xs font-bold rounded-full">TRILHA 2</span>
+            <span class="text-xs text-neutral-500">2 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">🎯 Intenção</h3>
+          <p class="text-blue-400 text-sm font-semibold mb-3">"Intenção é o destino."</p>
+          <p class="text-sm text-neutral-400 mb-3">O post perfeito que vendeu zero: a IA acertou a tarefa e errou o alvo.</p>
+          <p class="text-xs text-neutral-500">Objetivo, público e efeito antes de apertar enter.</p>
+        </a>
+
+        <a href="curso/trilha3/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-purple-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-purple-500/20 text-purple-400 text-xs font-bold rounded-full">TRILHA 3</span>
+            <span class="text-xs text-neutral-500">2 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-purple-400 transition-colors">🗺️ Contexto</h3>
+          <p class="text-purple-400 text-sm font-semibold mb-3">"Contexto é o mapa."</p>
+          <p class="text-sm text-neutral-400 mb-3">A campanha genérica: a IA não era fraca — estava cega.</p>
+          <p class="text-xs text-neutral-500">Arquivos, exemplos, briefing permanente + privacidade de dados.</p>
+        </a>
+
+        <a href="curso/trilha4/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-amber-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-400 text-xs font-bold rounded-full">TRILHA 4</span>
+            <span class="text-xs text-neutral-500">2 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-amber-400 transition-colors">📒 Aproveitamento</h3>
+          <p class="text-amber-400 text-sm font-semibold mb-3">"Aproveitamento é o método."</p>
+          <p class="text-sm text-neutral-400 mb-3">O acerto que se perdeu: o post performou 10× — e ninguém anotou por quê.</p>
+          <p class="text-xs text-neutral-500">Playbooks, biblioteca viva e rotina de captura de 5 min.</p>
+        </a>
+
+        <a href="curso/trilha5/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-teal-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-teal-500/20 text-teal-400 text-xs font-bold rounded-full">TRILHA 5</span>
+            <span class="text-xs text-neutral-500">2 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-teal-400 transition-colors">🧩 Arquitetura</h3>
+          <p class="text-teal-400 text-sm font-semibold mb-3">"Arquitetura é o sistema."</p>
+          <p class="text-sm text-neutral-400 mb-3">O gargalo invisível: 10 prompts excelentes, processo quebrado.</p>
+          <p class="text-xs text-neutral-500">Fluxos, loops e mini-sistemas — 100% no-code.</p>
+        </a>
+
+        <a href="curso/trilha6/index.html" class="group bg-dark-800 rounded-xl border border-dark-600 hover:border-rose-500/30 p-6 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 bg-rose-500/20 text-rose-400 text-xs font-bold rounded-full">TRILHA 6</span>
+            <span class="text-xs text-neutral-500">2 módulos</span>
+          </div>
+          <h3 class="text-xl font-bold mb-1 group-hover:text-rose-400 transition-colors">🔄 Evolução</h3>
+          <p class="text-rose-400 text-sm font-semibold mb-3">"Evolução é o aprendizado acumulado."</p>
+          <p class="text-sm text-neutral-400 mb-3">O vídeo que bombou — e o canal que não aprendeu nada com ele.</p>
+          <p class="text-xs text-neutral-500">Ciclos que aprendem + capstone: seu sistema como portfólio.</p>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- NA SUA PROFISSAO -->
+    <section id="profissao" class="mb-20">
+      <h2 class="text-2xl font-bold mb-2">Na sua profissão</h2>
+      <p class="text-neutral-400 mb-8">Cada trilha traduz o conceito pro seu dia a dia. Você se vê no exemplo — não em abstrações.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 text-center">
+          <div class="text-3xl mb-2">👩‍🏫</div>
+          <h3 class="font-semibold mb-1">Professor</h3>
+          <p class="text-xs text-neutral-400">Da aula genérica ao plano sob medida pra SUA turma — em minutos.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 text-center">
+          <div class="text-3xl mb-2">⚖️</div>
+          <h3 class="font-semibold mb-1">Advogado</h3>
+          <p class="text-xs text-neutral-400">Análise de cláusula, banco de teses e fluxo de contrato — com dados protegidos.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 text-center">
+          <div class="text-3xl mb-2">💼</div>
+          <h3 class="font-semibold mb-1">Vendedor</h3>
+          <p class="text-xs text-neutral-400">Follow-up que converte, playbook de objeções e fluxo lead→proposta.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 text-center">
+          <div class="text-3xl mb-2">📊</div>
+          <h3 class="font-semibold mb-1">Gestor</h3>
+          <p class="text-xs text-neutral-400">Decisões registradas, critérios claros e análise que destrava escolhas.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-dark-600 p-5 text-center">
+          <div class="text-3xl mb-2">🎨</div>
+          <h3 class="font-semibold mb-1">Criador / Autônomo</h3>
+          <p class="text-xs text-neutral-400">Estruturas campeãs, fluxo ideia→post e ciclo que aprende com cada resultado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- O KIT -->
+    <section id="kit" class="mb-20">
+      <h2 class="text-2xl font-bold mb-2">O kit que você leva pronto</h2>
+      <p class="text-neutral-400 mb-8">Nada de teoria solta: cada trilha termina com um artefato real. Juntos, eles formam o seu <strong class="text-neutral-300">Sistema de Conhecimento de IA</strong> — mostrável em entrevista, LinkedIn ou proposta de serviço.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-dark-800 rounded-xl border border-emerald-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">📚</span><h3 class="font-semibold text-emerald-400">Biblioteca de prompts</h3>
+          </div>
+          <p class="text-sm text-neutral-400">10 templates + os seus, nomeados e versionados, com checklist de verificação.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-blue-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">🎯</span><h3 class="font-semibold text-blue-400">Carta de intenção</h3>
+          </div>
+          <p class="text-sm text-neutral-400">O bloco de 4 linhas que cola antes de qualquer prompt e muda o alvo da resposta.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-purple-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">🗺️</span><h3 class="font-semibold text-purple-400">Briefing-base</h3>
+          </div>
+          <p class="text-sm text-neutral-400">O doc permanente do seu projeto + checklist de privacidade (o que nunca colar).</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-amber-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">📒</span><h3 class="font-semibold text-amber-400">Playbook</h3>
+          </div>
+          <p class="text-sm text-neutral-400">Seu primeiro processo documentado + índice da biblioteca viva.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-teal-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">🧩</span><h3 class="font-semibold text-teal-400">Mini-sistema</h3>
+          </div>
+          <p class="text-sm text-neutral-400">Fluxograma + prompts encadeados de um processo seu, executável em qualquer chat.</p>
+        </div>
+        <div class="bg-dark-800 rounded-xl border border-rose-500/30 p-5">
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="text-xl">🏆</span><h3 class="font-semibold text-rose-400">Mapa do sistema (portfólio)</h3>
+          </div>
+          <p class="text-sm text-neutral-400">A peça-mãe: 1 página ligando as 6 camadas + post de LinkedIn adaptável + ritual de evolução.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROVA DA PIRAMIDE -->
+    <section id="prova" class="mb-20">
+      <div class="bg-gradient-to-br from-rose-900/30 via-dark-800 to-dark-800 rounded-xl border border-rose-500/30 p-6 sm:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <span class="inline-block px-3 py-1 bg-rose-500/20 text-rose-400 text-xs font-semibold rounded-full mb-4">DESAFIO FINAL</span>
+            <h2 class="text-2xl font-bold mb-3">🏆 Prova da Pirâmide</h2>
+            <p class="text-neutral-300 mb-4">12 mini-casos reais — nada de decoreba. Cada resposta vem com <strong class="text-neutral-100">gabarito comentado na hora</strong>: você entende por que acertou e, principalmente, por que errou.</p>
+            <ul class="space-y-2 text-sm text-neutral-300 mb-6">
+              <li class="flex items-start space-x-2"><span class="text-rose-400">✓</span><span>Correção instantânea, questão a questão</span></li>
+              <li class="flex items-start space-x-2"><span class="text-rose-400">✓</span><span>Badge de nível compartilhável no final</span></li>
+              <li class="flex items-start space-x-2"><span class="text-rose-400">✓</span><span>Errou as 2 de contexto? Ela te diz: "comece pela Trilha 3"</span></li>
+            </ul>
+            <div class="flex justify-start">
+              <a href="curso/prova/index.html" class="px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold transition-colors">Fazer a prova →</a>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600 flex items-center justify-between">
+              <span class="text-sm text-neutral-300">🟢 Explorador da Base</span><span class="text-xs text-neutral-500">0–4 acertos</span>
+            </div>
+            <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600 flex items-center justify-between">
+              <span class="text-sm text-neutral-300">🟣 Construtor de Contexto</span><span class="text-xs text-neutral-500">5–8 acertos</span>
+            </div>
+            <div class="bg-dark-800/60 rounded-lg p-4 border border-dark-600 flex items-center justify-between">
+              <span class="text-sm text-neutral-300">🟦 Arquiteto de Sistemas</span><span class="text-xs text-neutral-500">9–11 acertos</span>
+            </div>
+            <div class="bg-dark-800/60 rounded-lg p-4 border border-rose-500/30 flex items-center justify-between">
+              <span class="text-sm font-semibold text-rose-400">🌹 Engenheiro de Evolução</span><span class="text-xs text-neutral-500">12 acertos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="mb-8 text-center">
+      <h2 class="text-3xl font-bold mb-4">Comece pela base. <span class="text-primary">Termine com um sistema.</span></h2>
+      <p class="text-neutral-400 max-w-xl mx-auto mb-8">Prompt é a pergunta. Intenção é o destino. Contexto é o mapa. Aproveitamento é o método. Arquitetura é o sistema. Evolução é o aprendizado acumulado.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="curso/trilha1/index.html" class="px-8 py-3 bg-primary text-dark-900 rounded-lg font-bold hover:bg-yellow-300 transition-colors">Começar pela Trilha 1 →</a>
+        <a href="#diagnostico" class="px-8 py-3 bg-dark-700 text-neutral-300 rounded-lg font-semibold hover:bg-dark-600 transition-colors">Descobrir minha camada</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-dark-600 py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-neutral-500 text-sm">
+      <p>Engenharia de Conhecimento da IA — Pirâmide da Inteligência Aplicada · 2026</p>
+      <p class="mt-2">Um curso <a href="https://inema.club" target="_blank" class="text-sky-400 hover:text-sky-300 font-medium">INEMA.CLUB</a></p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // ===== Theme Toggle =====
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const html = document.documentElement;
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && !html.classList.contains('dark'))) {
+      themeToggleDarkIcon.classList.remove('hidden');
+      html.classList.remove('dark');
+    } else {
+      themeToggleLightIcon.classList.remove('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      themeToggleDarkIcon.classList.toggle('hidden');
+      themeToggleLightIcon.classList.toggle('hidden');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // ===== Diagnostico =====
+    const LAYERS = {
+      1: { name: 'Prompt',         frase: 'Prompt é a pergunta.',                  color: '#34d399', trilha: 'curso/trilha1/index.html' },
+      2: { name: 'Intenção',       frase: 'Intenção é o destino.',                 color: '#60a5fa', trilha: 'curso/trilha2/index.html' },
+      3: { name: 'Contexto',       frase: 'Contexto é o mapa.',                    color: '#c084fc', trilha: 'curso/trilha3/index.html' },
+      4: { name: 'Aproveitamento', frase: 'Aproveitamento é o método.',            color: '#fbbf24', trilha: 'curso/trilha4/index.html' },
+      5: { name: 'Arquitetura',    frase: 'Arquitetura é o sistema.',              color: '#2dd4bf', trilha: 'curso/trilha5/index.html' },
+      6: { name: 'Evolução',       frase: 'Evolução é o aprendizado acumulado.',   color: '#fb7185', trilha: 'curso/trilha6/index.html' }
+    };
+    const answers = {};
+    const submitBtn = document.getElementById('diag-submit');
+
+    document.querySelectorAll('.diag-q').forEach(q => {
+      const layer = q.dataset.layer;
+      q.querySelectorAll('.diag-opt').forEach(opt => {
+        opt.addEventListener('click', () => {
+          q.querySelectorAll('.diag-opt').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          answers[layer] = parseFloat(opt.dataset.v);
+          if (Object.keys(answers).length === 6) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
+        });
+      });
+    });
+
+    submitBtn.addEventListener('click', () => {
+      // Nivel = camadas dominadas em sequencia a partir da base
+      let level = 0;
+      for (let i = 1; i <= 6; i++) {
+        if (answers[i] === 1) level = i; else break;
+      }
+      const next = Math.min(level + 1, 6);
+      const allMastered = level === 6;
+
+      const title = document.getElementById('diag-title');
+      const desc = document.getElementById('diag-desc');
+      const cta = document.getElementById('diag-cta');
+
+      if (allMastered) {
+        title.textContent = '🌹 Camada 6/6 — Engenharia de Evolução';
+        title.style.color = LAYERS[6].color;
+        desc.textContent = 'Você opera nas 6 camadas. Hora de validar: faça a Prova da Pirâmide e refine seu sistema com o capstone da Trilha 6.';
+        cta.href = 'curso/prova/index.html';
+        cta.textContent = 'Fazer a Prova da Pirâmide →';
+      } else if (level === 0) {
+        title.textContent = '🟢 Camada 1/6 — comece pela base';
+        title.style.color = LAYERS[1].color;
+        desc.textContent = 'Ótima notícia: você vai começar pelo lugar certo — a base. A Trilha 1 (com o módulo Base Zero) foi feita exatamente pra você. Quem começa na base entende evolução.';
+        cta.href = LAYERS[1].trilha;
+        cta.textContent = 'Começar pela Trilha 1 — Prompt →';
+      } else {
+        title.textContent = `Camada ${level}/6 — você domina até ${LAYERS[level].name}`;
+        title.style.color = LAYERS[level].color;
+        desc.textContent = `"${LAYERS[level].frase}" já é seu. Seu próximo degrau é a camada ${next} — ${LAYERS[next].name}. Não pule: cada nível prepara a mente pro próximo.`;
+        cta.href = LAYERS[next].trilha;
+        cta.textContent = `Começar pela Trilha ${next} — ${LAYERS[next].name} →`;
+      }
+
+      // Chips por camada
+      const chips = document.getElementById('diag-chips');
+      chips.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const v = answers[i];
+        const icon = v === 1 ? '✓' : (v === 0.5 ? '~' : '✗');
+        const cls = v === 1 ? 'text-emerald-400 border-emerald-500/30' : (v === 0.5 ? 'text-primary border-primary/40' : 'text-red-400 border-red-500/30');
+        chips.innerHTML += `<span class="px-2.5 py-1 rounded-full border bg-dark-700 text-xs font-semibold ${cls}">${icon} ${LAYERS[i].name}</span>`;
+      }
+
+      // Mini piramide colorida
+      document.querySelectorAll('#diag-pyr polygon').forEach(p => {
+        const l = parseInt(p.dataset.l);
+        if (l <= level || (allMastered && l <= 6)) {
+          p.setAttribute('stroke', LAYERS[l].color);
+          p.setAttribute('fill', LAYERS[l].color + '33');
+        } else if (l === next && !allMastered) {
+          p.setAttribute('stroke', LAYERS[l].color);
+          p.setAttribute('fill', '#1f2937');
+          p.setAttribute('stroke-dasharray', '6 5');
+        } else {
+          p.setAttribute('stroke', '#4b5563');
+          p.setAttribute('fill', '#1f2937');
+          p.removeAttribute('stroke-dasharray');
+        }
+      });
+      document.getElementById('diag-pyr-label').textContent =
+        allMastered ? 'Pirâmide completa — 6/6' : `Você está aqui: camada ${Math.max(level,1)}/6 · próximo degrau: ${LAYERS[next].name}`;
+
+      const result = document.getElementById('diag-result');
+      result.classList.remove('hidden');
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Share
+      const shareLevel = allMastered ? 6 : Math.max(level, 1);
+      window._diagShare = `Estou na camada ${shareLevel}/6 da Pirâmide da IA (${LAYERS[shareLevel].name}). E você, em qual camada está? 👉 ${location.href.split('#')[0]}`;
+    });
+
+    document.getElementById('diag-share').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window._diagShare || '');
+        document.getElementById('diag-copied').classList.remove('hidden');
+      } catch (e) {
+        prompt('Copie seu resultado:', window._diagShare || '');
+      }
+    });
+  </script>
+
+</body>
+</html>
